@@ -12,17 +12,16 @@ with open('HISTORY.rst') as history_file:
     history = history_file.read()
 
 requirements = [
-    # TODO: put package requirements here
+    "setuptools<=26.1.1",
+    "pyyaml",
 ]
 
 setup_requirements = [
     'pytest-runner',
-    # TODO(jayfk): put setup requirements (distutils extensions, etc.) here
 ]
 
 test_requirements = [
     'pytest',
-    # TODO: put package test requirements here
 ]
 
 setup(

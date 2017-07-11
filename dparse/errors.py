@@ -1,0 +1,2 @@
+class UnknownDependencyFileError(Exception):
+    pass
