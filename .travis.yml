@@ -29,4 +29,7 @@ python:
 - 3.4
 - 3.3
 - 2.7
-script: tox
+script:
+- tox
+- pip install codecov
+- codecov
