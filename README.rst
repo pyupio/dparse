@@ -25,16 +25,62 @@ A parser for Python dependency files
 * Documentation: https://dparse.readthedocs.io.
 
 
-Features
---------
+Supported Files
+---------------
 
-* TODO
++------------------+------------+-----------+
+| File             | parse      | update    |
++==================+============+===========+
+| requirements.txt | yes        | yes       |
++------------------+------------+-----------+
+| conda.yml        | yes        | yes       |
++------------------+------------+-----------+
+| tox.ini          | yes        | yes       |
++------------------+------------+-----------+
+| Pipfile          | no (# 1_)  | no (# 1_) |
++------------------+------------+-----------+
+| Pifile.lock      | no (# 1_)  | no (# 1_) |
++------------------+------------+-----------+
+| setup.py         | no (# 2_)  | no (# 2_) |
++------------------+------------+-----------+
+| zc.bildout       | no (# 3_)  | no (# 3_) |
++------------------+------------+-----------+
 
-Credits
----------
+.. _1: https://github.com/pyupio/dparse/issues/1
+.. _2: https://github.com/pyupio/dparse/issues/2
+.. _3: https://github.com/pyupio/dparse/issues/3
 
-This package was created with Cookiecutter_ and the `audreyr/cookiecutter-pypackage`_ project template.
+************
+Installation
+************
 
-.. _Cookiecutter: https://github.com/audreyr/cookiecutter
-.. _`audreyr/cookiecutter-pypackage`: https://github.com/audreyr/cookiecutter-pypackage
+To install dparse, run:
 
+.. code-block:: console
+
+    $ pip install -e git+https://github.com/pyupio/dparse.git
+
+*****
+Usage
+*****
+
+To use dparse in a Python project::
+
+    from dparse import parse, filetypes
+
+    content = """
+    -e common/lib/calc
+    South==1.0.1 --hash==abcdefghijklmno
+    pycrypto>=2.6
+    git+https://github.com/pmitros/pyfs.git@96e1922348bfe6d99201b9512a9ed946c87b7e0b
+    distribute>=0.6.28, <0.7
+    # bogus comment
+    -e .
+    pdfminer==20140328
+    -r production/requirements.txt
+    --requirement test.txt
+    """
+
+    df = parse(content, filetype=filetypes.requirements_txt)
+
+    print(df.json())
