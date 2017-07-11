@@ -19,7 +19,7 @@ deploy:
       MmNndkxjeGp3QytLei9obk9HUk5KOGJkbHJtclI0ZTdNeHMxSlRXYklSTW5HckNlUlBwVmZld2s9
   true:
     python: 2.7
-    repo: jayfk/dparse
+    repo: pyupio/dparse
     tags: true
 install: pip install -U tox-travis
 language: python
