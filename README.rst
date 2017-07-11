@@ -8,6 +8,9 @@ Dependency Parser
 
 .. image:: https://img.shields.io/travis/pyupio/dparse.svg
         :target: https://travis-ci.org/pyupio/dparse
+        
+.. image:: https://codecov.io/gh/pyupio/dparse/branch/master/graph/badge.svg
+  :target: https://codecov.io/gh/pyupio/dparse
 
 .. image:: https://readthedocs.org/projects/dparse/badge/?version=latest
         :target: https://dparse.readthedocs.io/en/latest/?badge=latest
