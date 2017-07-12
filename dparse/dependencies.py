@@ -1,6 +1,6 @@
 import json
 
-from . import filetypes, parser as parser_class, errors
+from dparse import filetypes, parser as parser_class, errors
 
 
 class Dependency(object):
