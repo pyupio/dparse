@@ -11,7 +11,7 @@ class Dependency(object):
 
     """
 
-    def __init__(self, name, specs, line, source="pypi", extras=None, line_numbers=None, index_server=None, hashes=(), dependency_type=None):
+    def __init__(self, name, specs, line, source="pypi", meta={}, extras=None, line_numbers=None, index_server=None, hashes=(), dependency_type=None):
         """
 
         :param name:
@@ -29,6 +29,7 @@ class Dependency(object):
         self.specs = specs
         self.line = line
         self.source = source
+        self.meta = meta
         self.line_numbers = line_numbers
         self.index_server = index_server
         self.hashes = hashes
@@ -56,6 +57,7 @@ class Dependency(object):
             "specs": self.specs,
             "line": self.line,
             "source": self.source,
+            "meta": self.meta,
             "line_numbers": self.line_numbers,
             "index_server": self.index_server,
             "hashes": self.hashes,
