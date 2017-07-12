@@ -11,12 +11,13 @@ class Dependency(object):
 
     """
 
-    def __init__(self, name, specs, line, extras=None, line_numbers=None, index_server=None, hashes=(), dependency_type=None):
+    def __init__(self, name, specs, line, source="pypi", extras=None, line_numbers=None, index_server=None, hashes=(), dependency_type=None):
         """
 
         :param name:
         :param specs:
         :param line:
+        :param source:
         :param extras:
         :param line_numbers:
         :param index_server:
@@ -27,6 +28,7 @@ class Dependency(object):
         self.key = name.lower().replace("_", "-")
         self.specs = specs
         self.line = line
+        self.source = source
         self.line_numbers = line_numbers
         self.index_server = index_server
         self.hashes = hashes
@@ -53,6 +55,7 @@ class Dependency(object):
             "name": self.name,
             "specs": self.specs,
             "line": self.line,
+            "source": self.source,
             "line_numbers": self.line_numbers,
             "index_server": self.index_server,
             "hashes": self.hashes,
