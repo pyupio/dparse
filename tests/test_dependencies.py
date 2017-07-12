@@ -1,10 +1,12 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals, absolute_import
-
 """Tests for `dparse.dependencies`"""
+
+import pytest
+
 from dparse.dependencies import Dependency, DependencyFile
-from dparse import filetypes, parse
+from dparse import filetypes, parse, parser, errors
 
 
 def test_dependency_serialize():
@@ -121,3 +123,30 @@ def test_dependency_file_deserialize():
     assert d['path'] == dep_file.path
     assert "django" == dep_file.dependencies[0].name
     assert "requests" == dep_file.dependencies[1].name
+
+
+def test_parser_class():
+
+    dep_file = parse("", file_type=filetypes.requirements_txt)
+    assert isinstance(dep_file.parser, parser.RequirementsTXTParser)
+
+    dep_file = parse("", path="req.txt")
+    assert isinstance(dep_file.parser, parser.RequirementsTXTParser)
+
+    dep_file = parse("", file_type=filetypes.tox_ini)
+    assert isinstance(dep_file.parser, parser.ToxINIParser)
+
+    dep_file = parse("", path="tox.ini")
+    assert isinstance(dep_file.parser, parser.ToxINIParser)
+
+    dep_file = parse("", file_type=filetypes.conda_yml)
+    assert isinstance(dep_file.parser, parser.CondaYMLParser)
+
+    dep_file = parse("", path="conda.yml")
+    assert isinstance(dep_file.parser, parser.CondaYMLParser)
+
+    dep_file = parse("", parser=parser.CondaYMLParser)
+    assert isinstance(dep_file.parser, parser.CondaYMLParser)
+
+    with pytest.raises(errors.UnknownDependencyFileError) as e:
+        parse("")

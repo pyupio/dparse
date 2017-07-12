@@ -22,31 +22,6 @@ from pkg_resources import parse_requirements
 from . import filetypes
 
 
-class Marker(object):
-    """
-
-    """
-    IGNORE_LINE = 1
-    IGNORE_FILE = 2
-
-    def __init__(self, marker, marker_type):
-        """
-
-        :param marker:
-        :param marker_type:
-        """
-        self.marker = marker
-        self.marker_type = marker_type
-
-    @property
-    def is_line_marker(self):
-        return self.marker_type == Marker.IGNORE_LINE
-
-    @property
-    def is_file_marker(self):
-        return self.marker_type == Marker.IGNORE_FILE
-
-
 class RequirementsTXTLineParser(object):
     """
 
@@ -85,10 +60,6 @@ class Parser(object):
         :param obj:
         """
         self.obj = obj
-
-        self._line_marker = frozenset([m.marker for m in obj.marker if m.is_line_marker])
-        self._file_marker = frozenset([m.marker for m in obj.marker if m.is_file_marker])
-
         self._lines = None
 
     def iter_lines(self, lineno=0):
@@ -116,9 +87,8 @@ class Parser(object):
 
         :return:
         """
-        n = 0
-        for line in enumerate(self.iter_lines()):
-            for marker in self._file_marker:
+        for n, line in enumerate(self.iter_lines()):
+            for marker in self.obj.file_marker:
                 if marker in line:
                     return True
             if n >= 2:
@@ -131,7 +101,7 @@ class Parser(object):
         :param line:
         :return:
         """
-        for marker in self._line_marker:
+        for marker in self.obj.line_marker:
             if marker in line:
                 return True
         return False
@@ -277,7 +247,7 @@ class CondaYMLParser(Parser):
         """
         try:
             data = yaml.safe_load(self.obj.content)
-            if 'dependencies' in data and isinstance(data['dependencies'], list):
+            if data and 'dependencies' in data and isinstance(data['dependencies'], list):
                 for dep in data['dependencies']:
                     if isinstance(dep, dict) and 'pip' in dep:
                         for n, line in enumerate(dep['pip']):
@@ -290,7 +260,7 @@ class CondaYMLParser(Parser):
             pass
 
 
-def parse(content, file_type=None, path=None, sha=None, marker=frozenset()):
+def parse(content, file_type=None, path=None, sha=None, marker=((), ()), parser=None):
     """
 
     :param content:
@@ -298,6 +268,7 @@ def parse(content, file_type=None, path=None, sha=None, marker=frozenset()):
     :param path:
     :param sha:
     :param marker:
+    :param parser:
     :return:
     """
     dep_file = DependencyFile(
@@ -305,7 +276,8 @@ def parse(content, file_type=None, path=None, sha=None, marker=frozenset()):
         path=path,
         sha=sha,
         marker=marker,
-        file_type=file_type
+        file_type=file_type,
+        parser=parser
     )
 
     return dep_file.parse()

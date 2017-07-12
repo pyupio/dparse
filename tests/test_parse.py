@@ -1,10 +1,59 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-
+from __future__ import unicode_literals
 """Tests for `dparse.parser`"""
 
 from dparse.parser import parse, Parser
 from dparse import filetypes
+
+
+def test_conda_file_invalid_yml():
+
+    content = "wawth:dda : awd:\ndlll"
+    dep_file = parse(content, file_type=filetypes.conda_yml)
+    assert dep_file.dependencies == []
+
+
+def test_conda_file_marked_line():
+    content = "name: my_env\n" \
+              "dependencies:\n" \
+              "  - gevent=1.2.1\n" \
+              "  - pip:\n" \
+              "    - beautifulsoup4==1.2.3\n # naaah, marked"
+    dep_file = parse(content, file_type=filetypes.conda_yml)
+    assert len(dep_file.dependencies) == 1
+
+    dep_file = parse(content, file_type=filetypes.conda_yml, marker=((), "naah, marked"))
+    assert len(dep_file.dependencies) == 0
+
+
+def test_tox_ini_marked_line():
+    content = "[testenv:bandit]\n" \
+              "commands =\n" \
+              "\tbandit --ini setup.cfg -ii -l --recursive project_directory\n" \
+              "deps =\n" \
+              "\tbandit==1.4.0 # naaah, marked\n" \
+              "\n" \
+              "[testenv:manifest]\n" \
+              "commands =\n" \
+              "\tcheck-manifest --verbose\n"
+
+    dep_file = parse(content, "tox.ini")
+    assert len(dep_file.dependencies) == 1
+
+    dep_file = parse(content, "tox.ini", marker=((), "naah, marked"))
+    assert len(dep_file.dependencies) == 0
+
+
+def test_resolve_file():
+    line = "-r req.txt"
+    assert Parser.resolve_file("/", line) == "/req.txt"
+
+    line = "-r req.txt # mysterious comment"
+    assert Parser.resolve_file("/", line) == "/req.txt"
+
+    line = "-r req.txt"
+    assert Parser.resolve_file("", line) == "req.txt"
 
 
 def test_index_server():
@@ -98,3 +147,23 @@ def test_file_resolver():
     dep_file = parse(content=content, file_type=filetypes.requirements_txt)
 
     assert dep_file.resolved_files == []
+
+
+def test_is_marked_file():
+
+    content = "# DON'T\nfoo"
+    dep_file = parse(content, file_type=filetypes.requirements_txt)
+    assert not dep_file.parser.is_marked_file
+
+    dep_file = parse(content, file_type=filetypes.requirements_txt, marker=(("DON'T",), ()))
+    assert dep_file.parser.is_marked_file
+
+
+def test_is_marked_line():
+
+    content = "foo # don't"
+    dep_file = parse(content, file_type=filetypes.requirements_txt)
+    assert not dep_file.parser.is_marked_line(next(dep_file.parser.iter_lines()))
+
+    dep_file = parse(content, file_type=filetypes.requirements_txt, marker=((), ("don't",)))
+    assert dep_file.parser.is_marked_line(next(dep_file.parser.iter_lines()))

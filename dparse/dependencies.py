@@ -85,7 +85,7 @@ class DependencyFile(object):
 
     """
 
-    def __init__(self, content, path=None, sha=None, marker=frozenset(), file_type=None, parser=None):
+    def __init__(self, content, path=None, sha=None, file_type=None, marker=((), ()), parser=None):
         """
 
         :param content:
@@ -104,6 +104,7 @@ class DependencyFile(object):
         self.dependencies = []
         self.resolved_files = []
         self.is_valid = False
+        self.file_marker, self.line_marker = marker
 
         if parser:
             self.parser = parser
@@ -123,8 +124,9 @@ class DependencyFile(object):
                     self.parser = parser_class.CondaYMLParser
                 elif path.endswith(".ini"):
                     self.parser = parser_class.ToxINIParser
-            else:
-                raise errors.UnknownDependencyFileError
+
+        if not hasattr(self, "parser"):
+            raise errors.UnknownDependencyFileError
 
         self.parser = self.parser(self)
 
