@@ -1,2 +1,5 @@
 class UnknownDependencyFileError(Exception):
+    """
+
+    """
     pass
