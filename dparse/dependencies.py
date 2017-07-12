@@ -1,6 +1,9 @@
+# -*- coding: utf-8 -*-
+from __future__ import unicode_literals, absolute_import
+
 import json
 
-from dparse import filetypes, parser as parser_class, errors
+from . import filetypes, errors
 
 
 class Dependency(object):
@@ -30,12 +33,12 @@ class Dependency(object):
         self.dependency_type = dependency_type
         self.extras = extras
 
-    def __str__(self):
+    def __str__(self):  # pragma: no cover
         """
 
         :return:
         """
-        return "Requirement({name}, {specs}, {line})".format(
+        return "Dependency({name}, {specs}, {line})".format(
             name=self.name,
             specs=self.specs,
             line=self.line
@@ -105,6 +108,7 @@ class DependencyFile(object):
         if parser:
             self.parser = parser
         else:
+            from . import parser as parser_class
             if file_type is not None:
                 if file_type == filetypes.requirements_txt:
                     self.parser = parser_class.RequirementsTXTParser
@@ -149,7 +153,7 @@ class DependencyFile(object):
         instance.dependencies = dependencies
         return instance
 
-    def json(self):
+    def json(self):  # pragma: no cover
         """
 
         :return:

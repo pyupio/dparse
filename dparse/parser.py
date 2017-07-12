@@ -1,9 +1,7 @@
 # -*- coding: utf-8 -*-
-from __future__ import unicode_literals
+from __future__ import unicode_literals, absolute_import
 import re
 import yaml
-
-import json
 
 # Python 2 & 3 compatible StringIO
 try:
