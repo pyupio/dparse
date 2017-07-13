@@ -8,7 +8,7 @@ Dependency Parser
 
 .. image:: https://img.shields.io/travis/pyupio/dparse.svg
         :target: https://travis-ci.org/pyupio/dparse
-        
+
 .. image:: https://codecov.io/gh/pyupio/dparse/branch/master/graph/badge.svg
   :target: https://codecov.io/gh/pyupio/dparse
 
@@ -61,7 +61,7 @@ To install dparse, run:
 
 .. code-block:: console
 
-    $ pip install -e git+https://github.com/pyupio/dparse.git
+    $ pip install dparse
 
 *****
 Usage
@@ -72,18 +72,58 @@ To use dparse in a Python project::
     from dparse import parse, filetypes
 
     content = """
-    -e common/lib/calc
-    South==1.0.1 --hash==abcdefghijklmno
+    South==1.0.1 --hash=sha256:abcdefghijklmno
     pycrypto>=2.6
-    git+https://github.com/pmitros/pyfs.git@96e1922348bfe6d99201b9512a9ed946c87b7e0b
-    distribute>=0.6.28, <0.7
-    # bogus comment
-    -e .
-    pdfminer==20140328
-    -r production/requirements.txt
-    --requirement test.txt
     """
 
-    df = parse(content, filetype=filetypes.requirements_txt)
+    df = parse(content, file_type=filetypes.requirements_txt)
 
     print(df.json())
+
+
+
+
+    {
+      "file_type": "requirements.txt",
+      "content": "\nSouth==1.0.1 --hash=sha256:abcdefghijklmno\npycrypto>=2.6\n",
+      "path": null,
+      "sha": null,
+      "dependencies": [
+        {
+          "name": "South",
+          "specs": [
+            [
+              "==",
+              "1.0.1"
+            ]
+          ],
+          "line": "South==1.0.1 --hash=sha256:abcdefghijklmno",
+          "source": "pypi",
+          "meta": {},
+          "line_numbers": null,
+          "index_server": null,
+          "hashes": [
+            "--hash=sha256:abcdefghijklmno"
+          ],
+          "dependency_type": "requirements.txt",
+          "extras": []
+        },
+        {
+          "name": "pycrypto",
+          "specs": [
+            [
+              ">=",
+              "2.6"
+            ]
+          ],
+          "line": "pycrypto>=2.6",
+          "source": "pypi",
+          "meta": {},
+          "line_numbers": null,
+          "index_server": null,
+          "hashes": [],
+          "dependency_type": "requirements.txt",
+          "extras": []
+        }
+      ]
+    }
