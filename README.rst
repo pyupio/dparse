@@ -48,10 +48,13 @@ Supported Files
 +------------------+------------+-----------+
 | zc.bildout       | no (# 3_)  | no (# 3_) |
 +------------------+------------+-----------+
+| setup.cfg        | no (# 4_)  | no (# 4_) |
++------------------+------------+-----------+
 
 .. _1: https://github.com/pyupio/dparse/issues/1
 .. _2: https://github.com/pyupio/dparse/issues/2
 .. _3: https://github.com/pyupio/dparse/issues/3
+.. _4: https://github.com/pyupio/dparse/issues/8
 
 ************
 Installation
