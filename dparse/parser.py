@@ -18,7 +18,7 @@ except ImportError:
 from .regex import URL_REGEX, HASH_REGEX
 
 from .dependencies import DependencyFile, Dependency
-from pkg_resources import parse_requirements
+from pkg_resources import parse_requirements, RequirementParseError
 from . import filetypes
 
 
@@ -34,11 +34,14 @@ class RequirementsTXTLineParser(object):
         :param line:
         :return:
         """
-        # setuptools requires a space before the comment. If this isn't the case, add it.
-        if "\t#" in line:
-            parsed, = parse_requirements(line.replace("\t#", "\t #"))
-        else:
-            parsed, = parse_requirements(line)
+        try:
+            # setuptools requires a space before the comment. If this isn't the case, add it.
+            if "\t#" in line:
+                parsed, = parse_requirements(line.replace("\t#", "\t #"))
+            else:
+                parsed, = parse_requirements(line)
+        except RequirementParseError:
+            return None
         dep = Dependency(
             name=parsed.project_name,
             specs=parsed.specs,
@@ -200,11 +203,12 @@ class RequirementsTXTParser(Parser):
                         parseable_line, hashes = Parser.parse_hashes(parseable_line)
 
                     req = RequirementsTXTLineParser.parse(parseable_line)
-                    req.hashes = hashes
-                    req.index_server = index_server
-                    # replace the requirements line with the 'real' line
-                    req.line = line
-                    self.obj.dependencies.append(req)
+                    if req:
+                        req.hashes = hashes
+                        req.index_server = index_server
+                        # replace the requirements line with the 'real' line
+                        req.line = line
+                        self.obj.dependencies.append(req)
                 except ValueError:
                     continue
 
@@ -229,8 +233,9 @@ class ToxINIParser(Parser):
                         continue
                     if line:
                         req = RequirementsTXTLineParser.parse(line)
-                        req.dependency_type = self.obj.file_type
-                        self.obj.dependencies.append(req)
+                        if req:
+                            req.dependency_type = self.obj.file_type
+                            self.obj.dependencies.append(req)
             except NoOptionError:
                 pass
 
@@ -254,8 +259,9 @@ class CondaYMLParser(Parser):
                             if self.is_marked_line(line):
                                 continue
                             req = RequirementsTXTLineParser.parse(line)
-                            req.dependency_type = self.obj.file_type
-                            self.obj.dependencies.append(req)
+                            if req:
+                                req.dependency_type = self.obj.file_type
+                                self.obj.dependencies.append(req)
         except yaml.YAMLError:
             pass
 

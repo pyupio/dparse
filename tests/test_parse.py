@@ -7,6 +7,38 @@ from dparse.parser import parse, Parser
 from dparse import filetypes
 
 
+def test_requirements_with_invalid_requirement():
+
+    content = "in=vali===d{}{}{"
+    dep_file = parse(content, file_type=filetypes.requirements_txt)
+    assert len(dep_file.dependencies) == 0
+
+
+def test_tox_ini_with_invalid_requirement():
+
+    content = "[testenv]" \
+              "passenv = CI TRAVIS TRAVIS_*" \
+              "setenv =" \
+              "PYTHONPATH = {toxinidir}" \
+              "deps =" \
+              "-r{toxinidir}/requirements_dev.txt" \
+              "pytest-cov" \
+              "codecov"
+    dep_file = parse(content, file_type=filetypes.tox_ini)
+    assert len(dep_file.dependencies) == 0
+
+
+def test_conda_file_with_invalid_requirement():
+
+    content = "name: my_env\n" \
+              "dependencies:\n" \
+              "  - gevent=1.2.1\n" \
+              "  - pip:\n" \
+              "    - in=vali===d{}{}{"
+    dep_file = parse(content, file_type=filetypes.conda_yml)
+    assert len(dep_file.dependencies) == 0
+
+
 def test_conda_file_invalid_yml():
 
     content = "wawth:dda : awd:\ndlll"
