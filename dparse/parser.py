@@ -18,8 +18,40 @@ except ImportError:
 from .regex import URL_REGEX, HASH_REGEX
 
 from .dependencies import DependencyFile, Dependency
-from pkg_resources import parse_requirements, RequirementParseError
+from packaging.requirements import Requirement as PackagingRequirement, InvalidRequirement
+import six
 from . import filetypes
+
+
+def parse_requirements(strs):
+    """Yield ``Requirement`` objects for each specification in `strs`
+
+    `strs` must be a string, or a (possibly-nested) iterable thereof.
+    """
+    # create a steppable iterator, so we can handle \-continuations
+    def yield_lines(strs):
+        """Yield non-empty/non-comment lines of a string or sequence"""
+        if isinstance(strs, six.string_types):
+            for s in strs.splitlines():
+                s = s.strip()
+                # skip blank lines/comments
+                if s and not s.startswith('#'):
+                    yield s
+        else:
+            for ss in strs:
+                for s in yield_lines(ss):
+                    yield s
+    lines = iter(yield_lines(strs))
+
+    for line in lines:
+        # Drop comments -- a hash without a space may be in a URL.
+        if ' #' in line:
+            line = line[:line.find(' #')]
+        # If there is a line continuation, drop it, and append the next line.
+        if line.endswith('\\'):
+            line = line[:-2].strip()
+            line += next(lines)
+        yield PackagingRequirement(line)
 
 
 class RequirementsTXTLineParser(object):
@@ -40,11 +72,11 @@ class RequirementsTXTLineParser(object):
                 parsed, = parse_requirements(line.replace("\t#", "\t #"))
             else:
                 parsed, = parse_requirements(line)
-        except RequirementParseError:
+        except InvalidRequirement:
             return None
         dep = Dependency(
-            name=parsed.project_name,
-            specs=parsed.specs,
+            name=parsed.name,
+            specs=parsed.specifier,
             line=line,
             extras=parsed.extras,
             dependency_type=filetypes.requirements_txt
