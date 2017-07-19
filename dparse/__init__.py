@@ -4,6 +4,6 @@ from __future__ import unicode_literals, absolute_import
 
 __author__ = """Jannis Gebauer"""
 __email__ = 'ja.geb@me.com'
-__version__ = '0.2.0'
+__version__ = '0.2.1'
 
 from .parser import parse
