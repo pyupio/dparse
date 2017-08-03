@@ -3,8 +3,221 @@
 from __future__ import unicode_literals
 """Tests for `dparse.parser`"""
 
+from packaging.specifiers import SpecifierSet
+
 from dparse.parser import parse, Parser
 from dparse import filetypes
+
+
+def test_dockerfile_from():
+    content = "ARG CODE_VERSION=99.88.77\n" \
+              "ARG FLAVOR=alpine\n" \
+              "ARG INV_==A=LID\n" \
+              "FROM postgres\n" \
+                "FROM postgres as mysql\n" \
+              "FROM postgres:9.2\n" \
+              "FROM postgres:9.3-alpine\n" \
+              "FROM postgres:alpine\n" \
+              "FROM postgres:latest\n" \
+              "FROM postgres:9.2 as mysql\n" \
+              "FROM postgres:9.3-alpine as mysql\n" \
+              "FROM postgres:alpine as mysql\n" \
+              "FROM postgres:latest as mysql\n" \
+              "FROM postgres:${CODE_VERSION}\n" \
+              "FROM postgres:${CODE_VERSION}-alpine\n" \
+              "FROM postgres:${FLAVOR}-latest\n" \
+              "FROM postgres:${CODE_VERSION} as mysql\n" \
+              "FROM postgres:${CODE_VERSION}-alpine as mysql\n" \
+              "FROM postgres:${FLAVOR}-latest as mysql\n" \
+              "FROM postgres@1234567"
+
+    dep_file = parse(content, file_type=filetypes.dockerfile)
+
+    # FROM postgres
+    dep = dep_file.dependencies[0]
+    assert dep.name == "postgres"
+    assert dep.specs == SpecifierSet()
+
+    assert dep.extras['as'] is None
+    assert dep.extras['digest'] is None
+    assert dep.extras['flavor'] is None
+    assert dep.extras['digest'] is None
+    assert dep.extras['latest'] is True
+
+    # FROM postgres as mysql
+    dep = dep_file.dependencies[1]
+    assert dep.name == "postgres"
+    assert dep.specs == SpecifierSet()
+
+    assert dep.extras['as'] == "mysql"
+    assert dep.extras['digest'] is None
+    assert dep.extras['flavor'] is None
+    assert dep.extras['digest'] is None
+    assert dep.extras['latest'] is True
+
+    # FROM postgres:9.2
+    dep = dep_file.dependencies[2]
+    assert dep.name == "postgres"
+    assert dep.specs == SpecifierSet('==9.2')
+
+    assert dep.extras['as'] is None
+    assert dep.extras['digest'] is None
+    assert dep.extras['flavor'] is None
+    assert dep.extras['digest'] is None
+    assert dep.extras['latest'] is False
+
+    # FROM postgres:9.3-alpine
+    dep = dep_file.dependencies[3]
+    assert dep.name == "postgres"
+    assert dep.specs == SpecifierSet('==9.3')
+
+    assert dep.extras['as'] is None
+    assert dep.extras['digest'] is None
+    assert dep.extras['flavor'] == "alpine"
+    assert dep.extras['digest'] is None
+    assert dep.extras['latest'] is False
+
+    # FROM postgres:alpine
+    dep = dep_file.dependencies[4]
+    assert dep.name == "postgres"
+    assert dep.specs == SpecifierSet()
+
+    assert dep.extras['as'] is None
+    assert dep.extras['digest'] is None
+    assert dep.extras['flavor'] == "alpine"
+    assert dep.extras['digest'] is None
+    assert dep.extras['latest'] is True
+
+    # FROM postgres:latest
+    dep = dep_file.dependencies[5]
+    assert dep.name == "postgres"
+    assert dep.specs == SpecifierSet()
+
+    assert dep.extras['as'] is None
+    assert dep.extras['digest'] is None
+    assert dep.extras['flavor'] is None
+    assert dep.extras['digest'] is None
+    assert dep.extras['latest'] is True
+
+    # FROM postgres:9.2 as mysql
+    dep = dep_file.dependencies[6]
+    assert dep.name == "postgres"
+    assert dep.specs == SpecifierSet('==9.2')
+
+    assert dep.extras['as'] == 'mysql'
+    assert dep.extras['digest'] is None
+    assert dep.extras['flavor'] is None
+    assert dep.extras['digest'] is None
+    assert dep.extras['latest'] is False
+
+    # FROM postgres:9.3-alpine as mysql
+    dep = dep_file.dependencies[7]
+    assert dep.name == "postgres"
+    assert dep.specs == SpecifierSet('==9.3')
+
+    assert dep.extras['as'] == 'mysql'
+    assert dep.extras['digest'] is None
+    assert dep.extras['flavor'] == 'alpine'
+    assert dep.extras['digest'] is None
+    assert dep.extras['latest'] is False
+
+    # FROM postgres:alpine as mysql
+    dep = dep_file.dependencies[8]
+    assert dep.name == "postgres"
+    assert dep.specs == SpecifierSet()
+
+    assert dep.extras['as'] == 'mysql'
+    assert dep.extras['digest'] is None
+    assert dep.extras['flavor'] == 'alpine'
+    assert dep.extras['digest'] is None
+    assert dep.extras['latest'] is True
+
+    # FROM postgres:latest as mysql
+    dep = dep_file.dependencies[9]
+    assert dep.name == "postgres"
+    assert dep.specs == SpecifierSet()
+
+    assert dep.extras['as'] == 'mysql'
+    assert dep.extras['digest'] is None
+    assert dep.extras['flavor'] is None
+    assert dep.extras['digest'] is None
+    assert dep.extras['latest'] is True
+
+    # FROM postgres:${CODE_VERSION}
+    dep = dep_file.dependencies[10]
+    assert dep.name == "postgres"
+    assert dep.specs == SpecifierSet('==99.88.77')
+
+    assert dep.extras['as'] is None
+    assert dep.extras['digest'] is None
+    assert dep.extras['flavor'] is None
+    assert dep.extras['digest'] is None
+    assert dep.extras['latest'] is False
+
+    # FROM postgres:${CODE_VERSION}-alpine
+    dep = dep_file.dependencies[11]
+    assert dep.name == "postgres"
+    assert dep.specs == SpecifierSet('==99.88.77')
+
+    assert dep.extras['as'] is None
+    assert dep.extras['digest'] is None
+    assert dep.extras['flavor'] == 'alpine'
+    assert dep.extras['digest'] is None
+    assert dep.extras['latest'] is False
+
+    # FROM postgres:${FLAVOR}-latest
+    dep = dep_file.dependencies[12]
+    assert dep.name == "postgres"
+    assert dep.specs == SpecifierSet()
+
+    assert dep.extras['as'] is None
+    assert dep.extras['digest'] is None
+    assert dep.extras['flavor'] == 'alpine'
+    assert dep.extras['digest'] is None
+    assert dep.extras['latest'] is True
+
+    # FROM postgres:${CODE_VERSION} as mysql
+    dep = dep_file.dependencies[13]
+    assert dep.name == "postgres"
+    assert dep.specs == SpecifierSet('==99.88.77')
+
+    assert dep.extras['as'] == 'mysql'
+    assert dep.extras['digest'] is None
+    assert dep.extras['flavor'] is None
+    assert dep.extras['digest'] is None
+    assert dep.extras['latest'] is False
+
+    # FROM postgres:${CODE_VERSION}-alpine as mysql
+    dep = dep_file.dependencies[14]
+    assert dep.name == "postgres"
+    assert dep.specs == SpecifierSet('==99.88.77')
+
+    assert dep.extras['as'] == 'mysql'
+    assert dep.extras['digest'] is None
+    assert dep.extras['flavor'] == 'alpine'
+    assert dep.extras['digest'] is None
+    assert dep.extras['latest'] is False
+
+    # FROM postgres:${FLAVOR}-latest as mysql
+    dep = dep_file.dependencies[15]
+    assert dep.name == "postgres"
+    assert dep.specs == SpecifierSet()
+
+    assert dep.extras['as'] == 'mysql'
+    assert dep.extras['digest'] is None
+    assert dep.extras['flavor'] == 'alpine'
+    assert dep.extras['digest'] is None
+    assert dep.extras['latest'] is True
+
+    # FROM postgres@1234567
+    dep = dep_file.dependencies[16]
+    assert dep.name == "postgres"
+    assert dep.specs == SpecifierSet('==@1234567')
+
+    assert dep.extras['as'] is None
+    assert dep.extras['digest'] == '1234567'
+    assert dep.extras['flavor'] is None
+    assert dep.extras['latest'] is False
 
 
 def test_requirements_with_invalid_requirement():

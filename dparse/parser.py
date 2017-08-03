@@ -19,6 +19,8 @@ from .regex import URL_REGEX, HASH_REGEX
 
 from .dependencies import DependencyFile, Dependency
 from packaging.requirements import Requirement as PackagingRequirement, InvalidRequirement
+from packaging.specifiers import SpecifierSet
+from packaging.version import Version, InvalidVersion
 import six
 from . import filetypes
 
@@ -316,6 +318,92 @@ class CondaYMLParser(Parser):
                                 self.obj.dependencies.append(req)
         except yaml.YAMLError:
             pass
+
+
+class DockerfileParser(Parser):
+    """
+    A parser for Dockerfiles
+    """
+
+    def parse(self):
+        build_args = {}
+        for line_number, line in enumerate(self.iter_lines()):
+            if line.lower().startswith("arg"):
+                bare = re.sub(r" arg|ARG ", "", line).split("#")[0]  # remove arg and comment
+
+                try:
+                    key, value = bare.split("=")
+                    build_args[key] = value
+                except ValueError:
+                    pass
+            elif line.lower().startswith("from"):
+                # expand build args
+                bare = line
+                for arg, val in build_args.items():
+                    bare = bare.replace("${" + arg + "}", val)
+
+                # remove from and comment
+                bare = bare.lower().replace("from ", "").split("#")[0]
+
+                extras = {
+                    "build_args": build_args,
+                    "as": None,
+                    "digest": None,
+                    "flavor": None,
+                    "latest": False
+                }
+
+                # remove the alternative image name
+                try:
+                    bare, extras["as"] = bare.split(" as ")
+                except ValueError:
+                    pass
+
+                # try to get the image tag
+                try:
+                    name, tag = bare.split(":")
+                    tag_parts = tag.split("-")
+                    if len(tag_parts) > 1:
+                        extras['flavor'] = tag_parts[-1]
+                        del tag_parts[-1]
+
+                    if tag_parts[0] == "latest":
+                        extras['latest'] = True
+                        specs = SpecifierSet()
+                    else:
+                        try:
+                            # if the tags first part is a valid version, we can build a proper spec set
+                            Version(tag_parts[0])
+                            specs = SpecifierSet("=={}".format("-".join(tag_parts)))
+                        except InvalidVersion:
+                            # this is not a valid release. assume a tag that points to a flavors latest release
+                            extras['latest'] = True
+                            extras['flavor'] = "-".join(tag_parts)
+                            specs = SpecifierSet()
+
+                except ValueError:
+                    # this image is not tagged, try to get the digest
+                    try:
+                        name, extras["digest"] = bare.split("@")
+                        specs = SpecifierSet('==@{}'.format(extras['digest']))
+                    except ValueError:
+                        # there is no tag and no digest, this is the latest release
+                        extras['latest'] = True
+                        name = bare
+                        specs = SpecifierSet()
+
+                dep = Dependency(
+                    name=name,
+                    specs=specs,
+                    line=line,
+                    source="dockerhub",
+                    extras=extras,
+                    line_numbers=(line, ),
+                    dependency_type=self.obj.file_type,
+                )
+                if dep:
+                    dep.line_numbers = [line_number,]
+                    self.obj.dependencies.append(dep)
 
 
 def parse(content, file_type=None, path=None, sha=None, marker=((), ()), parser=None):

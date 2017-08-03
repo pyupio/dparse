@@ -114,6 +114,7 @@ class DependencyFile(object):
         if parser:
             self.parser = parser
         else:
+            # todo: refactor this shit
             from . import parser as parser_class
             if file_type is not None:
                 if file_type == filetypes.requirements_txt:
@@ -122,6 +123,8 @@ class DependencyFile(object):
                     self.parser = parser_class.ToxINIParser
                 elif file_type == filetypes.conda_yml:
                     self.parser = parser_class.CondaYMLParser
+                elif file_type == filetypes.dockerfile:
+                    self.parser = parser_class.DockerfileParser
             elif path is not None:
                 if path.endswith(".txt"):
                     self.parser = parser_class.RequirementsTXTParser
@@ -129,6 +132,8 @@ class DependencyFile(object):
                     self.parser = parser_class.CondaYMLParser
                 elif path.endswith(".ini"):
                     self.parser = parser_class.ToxINIParser
+                elif path.endswith("Dockerfile"):
+                    self.parser = parser_class.DockerfileParser
 
         if not hasattr(self, "parser"):
             raise errors.UnknownDependencyFileError
