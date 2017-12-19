@@ -4,6 +4,7 @@
 """The setup script."""
 
 from setuptools import setup, find_packages
+import sys
 
 with open('README.rst') as readme_file:
     readme = readme_file.read()
@@ -17,9 +18,13 @@ requirements = [
     "pyyaml",
 ]
 
+# make pytest-runner a conditional requirement, per: https://pypi.org/project/pytest-runner/
+needs_pytest = {'pytest', 'test', 'ptr'}.intersection(sys.argv)
+pytest_runner = ['pytest-runner'] if needs_pytest else []
+
 setup_requirements = [
-    'pytest-runner',
-]
+    # other setup requirements
+] + pytest_runner
 
 test_requirements = [
     'pytest',
