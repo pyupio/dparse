@@ -1,6 +1,11 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, print_function, unicode_literals
 import re
+import json
+# Python 2 & 3 compatible StringIO
+import tempfile
+import toml
+import os
 
 
 class RequirementsTXTUpdater(object):
@@ -63,3 +68,45 @@ class CondaYMLUpdater(RequirementsTXTUpdater):
 
 class ToxINIUpdater(CondaYMLUpdater):
     pass
+
+
+class PipfileUpdater(object):
+    @classmethod
+    def update(cls, content, dependency, version, spec="==", hashes=()):
+        data = toml.loads(content)
+        if data:
+            for package_type in ['packages', 'dev-packages']:
+                if package_type in data:
+                    if dependency.full_name in data[package_type]:
+                        data[package_type][dependency.full_name] = "{spec}{version}".format(
+                            spec=spec, version=version
+                        )
+        from pipenv.project import Project
+        pipfile = tempfile.NamedTemporaryFile(delete=False)
+        p = Project(chdir=False)
+        p.write_toml(data=data, path=pipfile.name)
+        data = open(pipfile.name).read()
+        os.remove(pipfile.name)
+        return data
+
+
+class PipfileLockUpdater(object):
+    @classmethod
+    def update(cls, content, dependency, version, spec="==", hashes=()):
+        data = json.loads(content)
+        if data:
+            for package_type in ['default', 'develop']:
+                if package_type in data:
+                    if dependency.full_name in data[package_type]:
+                        data[package_type][dependency.full_name] = {
+                            'hashes': [
+                                "{method}:{hash}".format(
+                                    hash=h['hash'],
+                                    method=h['method']
+                                ) for h in hashes
+                            ],
+                            'version': "{spec}{version}".format(
+                                spec=spec, version=version
+                            )
+                        }
+        return json.dumps(data, indent=4, separators=(',', ': ')) + "\n"

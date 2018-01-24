@@ -4,7 +4,7 @@
 """Tests for `dparse.updater`"""
 
 from dparse.parser import parse
-from dparse.updater import RequirementsTXTUpdater, CondaYMLUpdater, ToxINIUpdater
+from dparse.updater import RequirementsTXTUpdater, CondaYMLUpdater, ToxINIUpdater, PipfileLockUpdater, PipfileUpdater
 from dparse import filetypes
 
 
@@ -434,3 +434,28 @@ def test_update_requirements_unfinished_line():
     assert dep.name == "raven"
     assert RequirementsTXTUpdater.update(content=content, version=version,
                                          dependency=dep) == new_content
+
+
+def test_update_pipfile():
+    content = """[[source]]
+
+url = "http://some.pypi.mirror.server.org/simple"
+verify_ssl = false
+name = "pypi"
+
+
+[packages]
+
+django = "==2.0"
+djangorestframework = "*"
+django-allauth = "*"
+
+
+[dev-packages]
+
+toml = "*"
+    """
+    dep_file = parse(content=content, file_type=filetypes.pipfile)
+    dep = dep_file.dependencies[0]
+    new_content = PipfileUpdater.update(content, version="2.1", dependency=dep)
+    assert 'django = "==2.1"' in new_content

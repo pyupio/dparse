@@ -21,7 +21,9 @@ from .dependencies import DependencyFile, Dependency
 from packaging.requirements import Requirement as PackagingRequirement, InvalidRequirement
 import six
 from . import filetypes
-
+from pipenv.vendor import toml
+from packaging.specifiers import SpecifierSet
+import json
 
 # this is a backport from setuptools 26.1
 def setuptools_parse_requirements_backport(strs):  # pragma: no cover
@@ -316,6 +318,60 @@ class CondaYMLParser(Parser):
                                 self.obj.dependencies.append(req)
         except yaml.YAMLError:
             pass
+
+
+class PipfileParser(Parser):
+
+    def parse(self):
+        """
+        Parse a Pipfile (as seen in pipenv)
+        :return:
+        """
+        try:
+            data = toml.loads(self.obj.content)
+            if data:
+                for package_type in ['packages', 'dev-packages']:
+                    if package_type in data:
+                        for name, specs in data[package_type].items():
+                            if specs == '*':
+                                specs = ''
+                            self.obj.dependencies.append(
+                                Dependency(
+                                    name=name, specs=SpecifierSet(specs),
+                                    dependency_type=filetypes.pipfile,
+                                    line=''.join([name, specs])
+                                )
+                            )
+        except toml.TomlDecodeError:
+            pass
+
+
+class PipfileLockParser(Parser):
+
+    def parse(self):
+        """
+        Parse a Pipfile.lock (as seen in pipenv)
+        :return:
+        """
+        try:
+            data = json.loads(self.obj.content)
+            if data:
+                for package_type in ['default', 'develop']:
+                    if package_type in data:
+                        for name, meta in data[package_type].items():
+                            specs = meta['version']
+                            hashes = meta['hashes']
+                            self.obj.dependencies.append(
+                                Dependency(
+                                    name=name, specs=SpecifierSet(specs),
+                                    dependency_type=filetypes.pipfile_lock,
+                                    hashes=hashes,
+                                    line=''.join([name, specs])
+                                )
+                            )
+        except json.JSONDecodeError:
+            pass
+
 
 
 def parse(content, file_type=None, path=None, sha=None, marker=((), ()), parser=None):

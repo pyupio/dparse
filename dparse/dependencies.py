@@ -11,7 +11,7 @@ class Dependency(object):
 
     """
 
-    def __init__(self, name, specs, line, source="pypi", meta={}, extras=None, line_numbers=None, index_server=None, hashes=(), dependency_type=None):
+    def __init__(self, name, specs, line, source="pypi", meta={}, extras=[], line_numbers=None, index_server=None, hashes=(), dependency_type=None):
         """
 
         :param name:
@@ -122,6 +122,11 @@ class DependencyFile(object):
                     self.parser = parser_class.ToxINIParser
                 elif file_type == filetypes.conda_yml:
                     self.parser = parser_class.CondaYMLParser
+                elif file_type == filetypes.pipfile:
+                    self.parser = parser_class.PipfileParser
+                elif file_type == filetypes.pipfile_lock:
+                    self.parser = parser_class.PipfileLockParser
+
             elif path is not None:
                 if path.endswith(".txt"):
                     self.parser = parser_class.RequirementsTXTParser
@@ -129,6 +134,10 @@ class DependencyFile(object):
                     self.parser = parser_class.CondaYMLParser
                 elif path.endswith(".ini"):
                     self.parser = parser_class.ToxINIParser
+                elif path.endswith("Pipfile"):
+                    self.parser = parser_class.PipfileParser
+                elif path.endswith("Pipfile.lock"):
+                    self.parser = parser_class.PipfileLockParser
 
         if not hasattr(self, "parser"):
             raise errors.UnknownDependencyFileError

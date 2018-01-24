@@ -15,6 +15,7 @@ requirements = [
     "packaging",
     "six",
     "pyyaml",
+    "pipenv"
 ]
 
 setup_requirements = [
