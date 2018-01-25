@@ -15,6 +15,12 @@ try:
 except ImportError:
     from configparser import SafeConfigParser, NoOptionError
 
+# Python 2 & 3 compatible basestring
+try:  # pragma: no cover
+    basestring
+except NameError:  # pragma: no cover
+    basestring = str
+
 from .regex import URL_REGEX, HASH_REGEX
 
 from .dependencies import DependencyFile, Dependency
@@ -24,6 +30,7 @@ from . import filetypes
 from pipenv.vendor import toml
 from packaging.specifiers import SpecifierSet
 import json
+
 
 # this is a backport from setuptools 26.1
 def setuptools_parse_requirements_backport(strs):  # pragma: no cover
@@ -333,6 +340,9 @@ class PipfileParser(Parser):
                 for package_type in ['packages', 'dev-packages']:
                     if package_type in data:
                         for name, specs in data[package_type].items():
+                            # skip on VCS dependencies
+                            if not isinstance(specs, basestring):
+                                continue
                             if specs == '*':
                                 specs = ''
                             self.obj.dependencies.append(
@@ -359,6 +369,9 @@ class PipfileLockParser(Parser):
                 for package_type in ['default', 'develop']:
                     if package_type in data:
                         for name, meta in data[package_type].items():
+                            # skip VCS dependencies
+                            if 'version' not in meta:
+                                continue
                             specs = meta['version']
                             hashes = meta['hashes']
                             self.obj.dependencies.append(
