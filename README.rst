@@ -40,9 +40,9 @@ Supported Files
 +------------------+------------+-----------+
 | tox.ini          | yes        | yes       |
 +------------------+------------+-----------+
-| Pipfile          | no (# 1_)  | no (# 1_) |
+| Pipfile          | yes        | yes       |
 +------------------+------------+-----------+
-| Pifile.lock      | no (# 1_)  | no (# 1_) |
+| Pifile.lock      | yes        | yes       |
 +------------------+------------+-----------+
 | setup.py         | no (# 2_)  | no (# 2_) |
 +------------------+------------+-----------+
@@ -51,7 +51,6 @@ Supported Files
 | setup.cfg        | no (# 4_)  | no (# 4_) |
 +------------------+------------+-----------+
 
-.. _1: https://github.com/pyupio/dparse/issues/1
 .. _2: https://github.com/pyupio/dparse/issues/2
 .. _3: https://github.com/pyupio/dparse/issues/3
 .. _4: https://github.com/pyupio/dparse/issues/8
