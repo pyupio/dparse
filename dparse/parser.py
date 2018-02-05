@@ -258,6 +258,9 @@ class RequirementsTXTParser(Parser):
                             if "\\" in next_line:
                                 continue
                             break
+                        # ignore multiline requirements if they are marked
+                        if self.is_marked_line(parseable_line):
+                            continue
 
                     hashes = []
                     if "--hash" in parseable_line:
