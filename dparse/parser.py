@@ -348,11 +348,13 @@ class PipfileParser(Parser):
                                 continue
                             if specs == '*':
                                 specs = ''
+                            extras = {'package_type': package_type}
                             self.obj.dependencies.append(
                                 Dependency(
                                     name=name, specs=SpecifierSet(specs),
                                     dependency_type=filetypes.pipfile,
-                                    line=''.join([name, specs])
+                                    line=''.join([name, specs]),
+                                    extras=extras
                                 )
                             )
         except toml.TomlDecodeError:
