@@ -348,13 +348,12 @@ class PipfileParser(Parser):
                                 continue
                             if specs == '*':
                                 specs = ''
-                            extras = {'package_type': package_type}
                             self.obj.dependencies.append(
                                 Dependency(
                                     name=name, specs=SpecifierSet(specs),
                                     dependency_type=filetypes.pipfile,
                                     line=''.join([name, specs]),
-                                    extras=extras
+                                    section=package_type
                                 )
                             )
         except toml.TomlDecodeError:
@@ -384,7 +383,8 @@ class PipfileLockParser(Parser):
                                     name=name, specs=SpecifierSet(specs),
                                     dependency_type=filetypes.pipfile_lock,
                                     hashes=hashes,
-                                    line=''.join([name, specs])
+                                    line=''.join([name, specs]),
+                                    section=package_type
                                 )
                             )
         except json.JSONDecodeError:
