@@ -352,7 +352,8 @@ class PipfileParser(Parser):
                                 Dependency(
                                     name=name, specs=SpecifierSet(specs),
                                     dependency_type=filetypes.pipfile,
-                                    line=''.join([name, specs])
+                                    line=''.join([name, specs]),
+                                    section=package_type
                                 )
                             )
         except toml.TomlDecodeError:
@@ -382,7 +383,8 @@ class PipfileLockParser(Parser):
                                     name=name, specs=SpecifierSet(specs),
                                     dependency_type=filetypes.pipfile_lock,
                                     hashes=hashes,
-                                    line=''.join([name, specs])
+                                    line=''.join([name, specs]),
+                                    section=package_type
                                 )
                             )
         except json.JSONDecodeError:
