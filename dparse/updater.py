@@ -70,6 +70,10 @@ class ToxINIUpdater(CondaYMLUpdater):
     pass
 
 
+class SetupCFGUpdater(CondaYMLUpdater):
+    pass
+
+
 class PipfileUpdater(object):
     @classmethod
     def update(cls, content, dependency, version, spec="==", hashes=()):
