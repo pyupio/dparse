@@ -391,6 +391,32 @@ class PipfileLockParser(Parser):
             pass
 
 
+class SetupCfgParser(Parser):
+    def parse(self):
+        parser = SafeConfigParser()
+        parser.readfp(StringIO(self.obj.content))
+        for section in parser.values():
+            if section.name == 'options':
+                options = 'install_requires', 'setup_requires', 'test_require'
+                for name in options:
+                    content = section.get(name)
+                    if not content:
+                        continue
+                    self._parse_content(content)
+            elif section.name == 'options.extras_require':
+                for content in section.values():
+                    self._parse_content(content)
+
+    def _parse_content(self, content):
+        for n, line in enumerate(content.splitlines()):
+            if self.is_marked_line(line):
+                continue
+            if line:
+                req = RequirementsTXTLineParser.parse(line)
+                if req:
+                    req.dependency_type = self.obj.file_type
+                    self.obj.dependencies.append(req)
+
 
 def parse(content, file_type=None, path=None, sha=None, marker=((), ()), parser=None):
     """

@@ -128,6 +128,8 @@ class DependencyFile(object):
                     self.parser = parser_class.PipfileParser
                 elif file_type == filetypes.pipfile_lock:
                     self.parser = parser_class.PipfileLockParser
+                elif file_type == filetypes.setup_cfg:
+                    self.parser = parser_class.SetupCfgParser
 
             elif path is not None:
                 if path.endswith(".txt"):
@@ -140,6 +142,8 @@ class DependencyFile(object):
                     self.parser = parser_class.PipfileParser
                 elif path.endswith("Pipfile.lock"):
                     self.parser = parser_class.PipfileLockParser
+                elif path.endswith("setup.cfg"):
+                    self.parser = parser_class.SetupCfgParser
 
         if not hasattr(self, "parser"):
             raise errors.UnknownDependencyFileError
