@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals, absolute_import
+from collections import OrderedDict
 import re
 import yaml
 
@@ -338,7 +339,7 @@ class PipfileParser(Parser):
         :return:
         """
         try:
-            data = toml.loads(self.obj.content)
+            data = toml.loads(self.obj.content, _dict=OrderedDict)
             if data:
                 for package_type in ['packages', 'dev-packages']:
                     if package_type in data:
@@ -368,7 +369,7 @@ class PipfileLockParser(Parser):
         :return:
         """
         try:
-            data = json.loads(self.obj.content)
+            data = json.loads(self.obj.content, object_pairs_hook=OrderedDict)
             if data:
                 for package_type in ['default', 'develop']:
                     if package_type in data:
@@ -387,7 +388,7 @@ class PipfileLockParser(Parser):
                                     section=package_type
                                 )
                             )
-        except json.JSONDecodeError:
+        except ValueError:
             pass
 
 
