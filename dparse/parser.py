@@ -357,9 +357,8 @@ class PipfileParser(Parser):
                                     section=package_type
                                 )
                             )
-        except toml.TomlDecodeError:
+        except (toml.TomlDecodeError, IndexError) as e:
             pass
-
 
 class PipfileLockParser(Parser):
 
