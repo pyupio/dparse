@@ -2,6 +2,14 @@
 History
 =======
 
+0.3.0 (2018-03-01)
+------------------
+
+* Added support for setup.cfg files (thanks @kexepal)
+* Dependencies from Pipfiles now include the section (thanks @paulortman)
+* Multiline requirements are now ignored if they are marked
+* Added experimental support for Pipfiles
+
 0.2.1 (2017-07-19)
 ------------------
 
