@@ -32,7 +32,7 @@ test_requirements = [
 
 setup(
     name='dparse',
-    version='0.4.0',
+    version='0.4.1',
     description="A parser for Python dependency files",
     long_description=readme + '\n\n' + history,
     author="Jannis Gebauer",
