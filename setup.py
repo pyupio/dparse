@@ -16,7 +16,6 @@ requirements = [
     "packaging",
     "six",
     "pyyaml",
-    "pipenv"
 ]
 
 # make pytest-runner a conditional requirement, per: https://pypi.org/project/pytest-runner/
@@ -60,4 +59,7 @@ setup(
     test_suite='tests',
     tests_require=test_requirements,
     setup_requires=setup_requirements,
+    extras_require={
+        'pipenv':  ["pipenv"],
+    }
 )

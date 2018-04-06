@@ -4,7 +4,7 @@ import re
 import json
 # Python 2 & 3 compatible StringIO
 import tempfile
-import toml
+from .vendor import toml
 import os
 
 
@@ -85,7 +85,11 @@ class PipfileUpdater(object):
                         data[package_type][dependency.full_name] = "{spec}{version}".format(
                             spec=spec, version=version
                         )
-        from pipenv.project import Project
+        try:
+            from pipenv.project import Project
+        except ImportError:
+            raise ImportError("Updating a Pipfile requires the pipenv extra to be installed. Install it with "
+                              "pip install dparse[pipenv]")
         pipfile = tempfile.NamedTemporaryFile(delete=False)
         p = Project(chdir=False)
         p.write_toml(data=data, path=pipfile.name)
