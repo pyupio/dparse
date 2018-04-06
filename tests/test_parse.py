@@ -290,3 +290,25 @@ def test_pipfile_lock():
         "sha256:52475f607c92035d4ac8fee284f56213065a4a6b25ed43f7e39df0e576e69e9f",
         "sha256:d96b804be412a5125a594023ec524a2010a6ffa4d408e5482ab6ff3cb97ec12f"
     ]
+
+
+def test_pipfile_with_invalid_toml():
+    content = """[[source]
+
+url = "http://some.pypi.mirror.server.org/simple"
+verify_ssl = false
+ds name < "pypi"
+"""
+    dep_file = parse(content, file_type=filetypes.pipfile)
+    assert not dep_file.dependencies
+
+
+def test_pipfile_lock_with_invalid_json():
+    content = """{
+    "_meta": 
+        "hash": {
+            "sha256": "8b5635a4f7b069ae6661115b9eaa15466f7cd96794af5d131735a3638be101fb"
+        },
+}"""
+    dep_file = parse(content, file_type=filetypes.pipfile_lock)
+    assert not dep_file.dependencies
