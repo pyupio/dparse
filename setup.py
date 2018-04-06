@@ -32,11 +32,11 @@ test_requirements = [
 
 setup(
     name='dparse',
-    version='0.3.0',
+    version='0.4.0',
     description="A parser for Python dependency files",
     long_description=readme + '\n\n' + history,
     author="Jannis Gebauer",
-    author_email='ja.geb@me.com',
+    author_email='jay@pyup.io',
     url='https://github.com/jayfk/dparse',
     packages=find_packages(include=['dparse']),
     include_package_data=True,

@@ -2,6 +2,13 @@
 History
 =======
 
+0.4.0 (2018-04-06)
+------------------
+
+* pipenv is now an optional dependency that's only used when updating a Pipfile. Install it with dparse[pipenv]
+* Added support for invalid toml Pipfiles (thanks @pombredanne)
+
+
 0.3.0 (2018-03-01)
 ------------------
 
