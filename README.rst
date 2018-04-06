@@ -46,7 +46,7 @@ Supported Files
 +------------------+------------+-----------+
 | setup.py         | no (# 2_)  | no (# 2_) |
 +------------------+------------+-----------+
-| zc.buildout       | no (# 3_)  | no (# 3_) |
+| zc.buildout      | no (# 3_)  | no (# 3_) |
 +------------------+------------+-----------+
 | setup.cfg        | no (# 4_)  | no (# 4_) |
 +------------------+------------+-----------+
@@ -64,6 +64,12 @@ To install dparse, run:
 .. code-block:: console
 
     $ pip install dparse
+
+If you want to update Pipfiles, install the pipenv extra:
+
+.. code-block:: console
+
+    $ pip install dparse[pipenv]
 
 *****
 Usage
