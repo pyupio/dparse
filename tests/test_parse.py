@@ -60,6 +60,18 @@ def test_conda_file_marked_line():
     assert len(dep_file.dependencies) == 0
 
 
+
+def test_conda_file__index():
+    content = "name: my_env\n" \
+              "dependencies:\n" \
+              "  - gevent=1.2.1\n" \
+              "  - pip:\n" \
+              "    --index-url https://some.foo/" \
+              "    - beautifulsoup4==1.2.3\n # naaah, marked"
+    dep_file = parse(content, file_type=filetypes.conda_yml)
+    assert len(dep_file.dependencies) == 1
+    assert dep_file.dependencies.index_server == 'https://some.foo/'
+
 def test_tox_ini_marked_line():
     content = "[testenv:bandit]\n" \
               "commands =\n" \

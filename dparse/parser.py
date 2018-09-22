@@ -315,6 +315,7 @@ class CondaYMLParser(Parser):
 
         :return:
         """
+        index_server = None
         try:
             data = yaml.safe_load(self.obj.content)
             if data and 'dependencies' in data and isinstance(data['dependencies'], list):
@@ -323,9 +324,16 @@ class CondaYMLParser(Parser):
                         for n, line in enumerate(dep['pip']):
                             if self.is_marked_line(line):
                                 continue
+                            if line.startswith('-i') or \
+                                    line.startswith('--index-url') or \
+                                    line.startswith('--extra-index-url'):
+                                # this file is using a private index server, try to parse it
+                                index_server = self.parse_index_server(line)
+                                continue
                             req = RequirementsTXTLineParser.parse(line)
                             if req:
                                 req.dependency_type = self.obj.file_type
+                                req.index_server = index_server
                                 self.obj.dependencies.append(req)
         except yaml.YAMLError:
             pass
