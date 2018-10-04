@@ -12,9 +12,9 @@ except ImportError:
 
 # Python 2 & 3 compatible Configparser
 try:
-    from ConfigParser import SafeConfigParser, NoOptionError
+    from ConfigParser import ConfigParser, NoOptionError
 except ImportError:
-    from configparser import SafeConfigParser, NoOptionError
+    from configparser import ConfigParser, NoOptionError
 
 # Python 2 & 3 compatible basestring
 try:  # pragma: no cover
@@ -288,7 +288,7 @@ class ToxINIParser(Parser):
 
         :return:
         """
-        parser = SafeConfigParser()
+        parser = ConfigParser()
         parser.readfp(StringIO(self.obj.content))
         for section in parser.sections():
             try:
@@ -393,7 +393,7 @@ class PipfileLockParser(Parser):
 
 class SetupCfgParser(Parser):
     def parse(self):
-        parser = SafeConfigParser()
+        parser = ConfigParser()
         parser.readfp(StringIO(self.obj.content))
         for section in parser.values():
             if section.name == 'options':
