@@ -93,7 +93,8 @@ class PipfileUpdater(object):
         pipfile = tempfile.NamedTemporaryFile(delete=False)
         p = Project(chdir=False)
         p.write_toml(data=data, path=pipfile.name)
-        data = open(pipfile.name).read()
+        with open(pipfile.name) as f:
+            data = f.read()
         os.remove(pipfile.name)
         return data
 
