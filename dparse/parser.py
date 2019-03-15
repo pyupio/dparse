@@ -395,16 +395,15 @@ class SetupCfgParser(Parser):
     def parse(self):
         parser = SafeConfigParser()
         parser.readfp(StringIO(self.obj.content))
-        for section in parser.values():
-            if section.name == 'options':
+        for section in parser.sections():
+            if section == 'options':
                 options = 'install_requires', 'setup_requires', 'test_require'
                 for name in options:
-                    content = section.get(name)
-                    if not content:
-                        continue
-                    self._parse_content(content)
-            elif section.name == 'options.extras_require':
-                for content in section.values():
+                    if parser.has_option('options', name):
+                        content = section.get('options', name)
+                        self._parse_content(content)
+            elif section == 'options.extras_require':
+                for _, content in parser.items('options.extras_require'):
                     self._parse_content(content)
 
     def _parse_content(self, content):
