@@ -28,7 +28,7 @@ from .dependencies import DependencyFile, Dependency
 from packaging.requirements import Requirement as PackagingRequirement, InvalidRequirement
 import six
 from . import filetypes
-from .vendor import toml
+import toml
 from packaging.specifiers import SpecifierSet
 import json
 

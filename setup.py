@@ -16,6 +16,7 @@ requirements = [
     "packaging",
     "six",
     "pyyaml",
+    "toml",
 ]
 
 # make pytest-runner a conditional requirement, per: https://pypi.org/project/pytest-runner/
