@@ -4,7 +4,7 @@ import re
 import json
 # Python 2 & 3 compatible StringIO
 import tempfile
-from .vendor import toml
+import toml
 import os
 
 
