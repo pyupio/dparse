@@ -6,6 +6,7 @@ History
 ------------------
 
 * Dropped Python 2.7, 3.3, 3.4 support
+* Removed six package
 * Removed pinned dependencies of tests
 * Dropped setup.py tests support in favor of tox
 
