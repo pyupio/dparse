@@ -78,11 +78,8 @@ Ready to contribute? Here's how to set up `dparse` for local development.
 
 5. When you're done making changes, check that your changes pass flake8 and the tests, including testing other Python versions with tox::
 
-    $ flake8 dparse tests
-    $ python setup.py test or py.test
+    $ pip install tox
     $ tox
-
-   To get flake8 and tox, just pip install them into your virtualenv.
 
 6. Commit your changes and push your branch to GitHub::
 

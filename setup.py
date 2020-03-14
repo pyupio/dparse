@@ -4,7 +4,6 @@
 """The setup script."""
 
 from setuptools import setup, find_packages
-import sys
 
 with open('README.rst') as readme_file:
     readme = readme_file.read()
@@ -13,22 +12,11 @@ with open('HISTORY.rst') as history_file:
     history = history_file.read()
 
 requirements = [
+    "pipenv",
     "packaging",
     "six",
     "pyyaml",
     "toml",
-]
-
-# make pytest-runner a conditional requirement, per: https://pypi.org/project/pytest-runner/
-needs_pytest = {'pytest', 'test', 'ptr'}.intersection(sys.argv)
-pytest_runner = ['pytest-runner'] if needs_pytest else []
-
-setup_requirements = [
-    # other setup requirements
-] + pytest_runner
-
-test_requirements = [
-    'pytest',
 ]
 
 setup(
@@ -56,9 +44,6 @@ setup(
         'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
     ],
-    test_suite='tests',
-    tests_require=test_requirements,
-    setup_requires=setup_requirements,
     extras_require={
         'pipenv':  ["pipenv"],
     }

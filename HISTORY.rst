@@ -2,6 +2,13 @@
 History
 =======
 
+0.5.0 (2018-04-06)
+------------------
+
+* Dropped Python 2.7, 3.3, 3.4 support
+* Removed pinned dependencies of tests
+* Dropped setup.py tests support in favor of tox
+
 0.4.1 (2018-04-06)
 ------------------
 
