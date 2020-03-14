@@ -4,7 +4,6 @@
 """The setup script."""
 
 from setuptools import setup, find_packages
-import sys
 
 with open('README.rst') as readme_file:
     readme = readme_file.read()
@@ -13,32 +12,20 @@ with open('HISTORY.rst') as history_file:
     history = history_file.read()
 
 requirements = [
+    "pipenv",
     "packaging",
-    "six",
     "pyyaml",
     "toml",
 ]
 
-# make pytest-runner a conditional requirement, per: https://pypi.org/project/pytest-runner/
-needs_pytest = {'pytest', 'test', 'ptr'}.intersection(sys.argv)
-pytest_runner = ['pytest-runner'] if needs_pytest else []
-
-setup_requirements = [
-    # other setup requirements
-] + pytest_runner
-
-test_requirements = [
-    'pytest',
-]
-
 setup(
     name='dparse',
-    version='0.4.1',
+    version='0.5.0',
     description="A parser for Python dependency files",
     long_description=readme + '\n\n' + history,
     author="Jannis Gebauer",
     author_email='jay@pyup.io',
-    url='https://github.com/jayfk/dparse',
+    url='https://github.com/pyupio/dparse',
     packages=find_packages(include=['dparse']),
     include_package_data=True,
     install_requires=requirements,
@@ -50,16 +37,12 @@ setup(
         'Intended Audience :: Developers',
         'License :: OSI Approved :: MIT License',
         'Natural Language :: English',
-        "Programming Language :: Python :: 2",
-        'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.8',
     ],
-    test_suite='tests',
-    tests_require=test_requirements,
-    setup_requires=setup_requirements,
     extras_require={
         'pipenv':  ["pipenv"],
     }
