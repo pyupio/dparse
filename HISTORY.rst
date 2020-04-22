@@ -2,6 +2,11 @@
 History
 =======
 
+0.5.1a
+------------------
+
+ * Fixed package metadata removing 2.7 support
+
 0.5.0 (2020-03-14)
 ------------------
 

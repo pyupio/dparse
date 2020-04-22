@@ -19,7 +19,7 @@ requirements = [
 
 setup(
     name='dparse',
-    version='0.5.0',
+    version='0.5.1a',
     description="A parser for Python dependency files",
     long_description=readme + '\n\n' + history,
     author="Jannis Gebauer",
@@ -42,6 +42,7 @@ setup(
         'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
     ],
+    python_requires=">=3.5",
     extras_require={
         'pipenv':  ["pipenv"],
     }
