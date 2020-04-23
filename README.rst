@@ -12,20 +12,8 @@ Dependency Parser
 .. image:: https://codecov.io/gh/pyupio/dparse/branch/master/graph/badge.svg
   :target: https://codecov.io/gh/pyupio/dparse
 
-.. image:: https://readthedocs.org/projects/dparse/badge/?version=latest
-        :target: https://dparse.readthedocs.io/en/latest/?badge=latest
-        :alt: Documentation Status
-
-.. image:: https://pyup.io/repos/github/jayfk/dparse/shield.svg
-     :target: https://pyup.io/repos/github/pyupio/dparse/
-     :alt: Updates
-
 
 A parser for Python dependency files
-
-
-* Free software: MIT license
-* Documentation: https://dparse.readthedocs.io.
 
 
 Supported Files
