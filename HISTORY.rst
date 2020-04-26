@@ -10,6 +10,10 @@ History
 0.5.0 (2020-03-14)
 ------------------
 
+A bug with this package allows it to be installed on Python 2.7 environments,
+even though it should not work on such version. You should stick with version
+0.4.1 version instead for Python 2.7 support.
+
 * Dropped Python 2.7, 3.3, 3.4 support
 * Removed six package
 * Removed pinned dependencies of tests
