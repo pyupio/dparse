@@ -2,10 +2,11 @@
 History
 =======
 
-0.5.1a
+0.5.1 (2020-04-26)
 ------------------
 
  * Fixed package metadata removing 2.7 support
+ * Install pipenv only when asked for with extras
 
 0.5.0 (2020-03-14)
 ------------------
