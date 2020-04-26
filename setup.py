@@ -19,7 +19,7 @@ requirements = [
 
 setup(
     name='dparse',
-    version='0.5.1',
+    version='0.5.2a',
     description="A parser for Python dependency files",
     long_description=readme + '\n\n' + history,
     author="Jannis Gebauer",
