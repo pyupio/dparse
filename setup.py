@@ -23,7 +23,7 @@ setup(
     description="A parser for Python dependency files",
     long_description=readme + '\n\n' + history,
     author="Jannis Gebauer",
-    author_email='jay@pyup.io',
+    author_email='support@pyup.io',
     url='https://github.com/pyupio/dparse',
     packages=find_packages(include=['dparse']),
     include_package_data=True,
