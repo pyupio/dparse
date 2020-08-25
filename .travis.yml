@@ -18,7 +18,7 @@ deploy:
       S2dBbFZnbmtGV245Y2JKdmw5NnRqQkQrc1R3aEtoODdUVG5rdmpaTWJsWHJtZEpUT09jUW9YaC9K
       MmNndkxjeGp3QytLei9obk9HUk5KOGJkbHJtclI0ZTdNeHMxSlRXYklSTW5HckNlUlBwVmZld2s9
   true:
-    python: 3.6
+    python: 2.7
     repo: pyupio/dparse
     tags: true
 install: pip install -U tox-travis
@@ -27,7 +27,7 @@ python:
 - 3.8
 - 3.7
 - 3.6
-- 3.5
+- 2.7
 script:
 - tox
 - pip install codecov
