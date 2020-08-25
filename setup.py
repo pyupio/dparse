@@ -21,8 +21,8 @@ requirements = [
 
 setup(
     name='dparse2',
-    version='0.5.0.2',
-    description="A parser for Python dependency files. Temp fork for Python 2 support",
+    version='0.5.0.3',
+    description="A parser for Python dependency files. Temp fork for Python 2 support.",
     long_description=readme + '\n\n' + history,
     author="Jannis Gebauer",
     author_email='jay@pyup.io',
