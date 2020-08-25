@@ -12,7 +12,6 @@ with open('HISTORY.rst') as history_file:
     history = history_file.read()
 
 requirements = [
-    "pipenv",
     "packaging",
     "pyyaml",
     "toml",
@@ -21,7 +20,7 @@ requirements = [
 
 setup(
     name='dparse2',
-    version='0.5.0.3',
+    version='0.5.0.4',
     description="A parser for Python dependency files. Temp fork for Python 2 support.",
     long_description=readme + '\n\n' + history,
     author="Jannis Gebauer",
@@ -38,6 +37,7 @@ setup(
         'Intended Audience :: Developers',
         'License :: OSI Approved :: MIT License',
         'Natural Language :: English',
+        'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
