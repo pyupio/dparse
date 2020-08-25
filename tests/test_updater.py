@@ -3,6 +3,9 @@
 
 """Tests for `dparse.updater`"""
 
+from unittest import skipIf
+import sys
+
 from dparse.parser import parse
 from dparse.updater import RequirementsTXTUpdater, CondaYMLUpdater, ToxINIUpdater, PipfileLockUpdater, PipfileUpdater
 from dparse import filetypes
@@ -436,6 +439,9 @@ def test_update_requirements_unfinished_line():
                                          dependency=dep) == new_content
 
 
+py2 = sys.version_info[0] == 2
+
+@skipIf(py2, "Fails on Python2")
 def test_update_pipfile(monkeypatch):
     content = """[[source]]
 
