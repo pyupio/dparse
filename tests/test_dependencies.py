@@ -133,6 +133,9 @@ def test_parser_class():
     dep_file = parse("", path="req.txt")
     assert isinstance(dep_file.parser, parser.RequirementsTXTParser)
 
+    dep_file = parse("", path="req.in")
+    assert isinstance(dep_file.parser, parser.RequirementsTXTParser)
+
     dep_file = parse("", file_type=filetypes.tox_ini)
     assert isinstance(dep_file.parser, parser.ToxINIParser)
 

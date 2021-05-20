@@ -132,7 +132,7 @@ class DependencyFile(object):
                     self.parser = parser_class.SetupCfgParser
 
             elif path is not None:
-                if path.endswith(".txt"):
+                if path.endswith((".txt", ".in")):
                     self.parser = parser_class.RequirementsTXTParser
                 elif path.endswith(".yml"):
                     self.parser = parser_class.CondaYMLParser
