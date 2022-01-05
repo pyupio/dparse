@@ -6,7 +6,7 @@ import yaml
 
 from io import StringIO
 
-from configparser import SafeConfigParser, NoOptionError
+from configparser import ConfigParser, NoOptionError
 
 
 from .regex import URL_REGEX, HASH_REGEX
@@ -274,7 +274,7 @@ class ToxINIParser(Parser):
 
         :return:
         """
-        parser = SafeConfigParser()
+        parser = ConfigParser()
         parser.readfp(StringIO(self.obj.content))
         for section in parser.sections():
             try:
@@ -379,7 +379,7 @@ class PipfileLockParser(Parser):
 
 class SetupCfgParser(Parser):
     def parse(self):
-        parser = SafeConfigParser()
+        parser = ConfigParser()
         parser.readfp(StringIO(self.obj.content))
         for section in parser.values():
             if section.name == 'options':
