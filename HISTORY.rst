@@ -3,7 +3,7 @@ History
 =======
 
 0.5.2 (2022-08-09)
----------------
+------------------
 
 * Install pyyaml only when asked for with extras (conda extra)
 * Add support for piptools requirements.in
