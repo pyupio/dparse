@@ -2,10 +2,13 @@
 History
 =======
 
-0.5.2a (master)
+0.5.2 (2022-08-09)
 ---------------
 
-* Current unstable version
+* Install pyyaml only when asked for with extras (conda extra)
+* Add support for piptools requirements.in
+* Use ConfigParser directly
+* Removed a regex used in the index server validation, fixing a possible ReDos security issue
 
 0.5.1 (2020-04-26)
 ------------------
