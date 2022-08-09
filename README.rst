@@ -59,6 +59,12 @@ If you want to update Pipfiles, install the pipenv extra:
 
     $ pip install dparse[pipenv]
 
+If you want to parse conda YML files, install the conda extra:
+
+.. code-block:: console
+
+    $ pip install dparse[conda]
+
 *****
 Usage
 *****

@@ -13,7 +13,6 @@ with open('HISTORY.rst') as history_file:
 
 requirements = [
     "packaging",
-    "pyyaml",
     "toml",
 ]
 
@@ -44,6 +43,7 @@ setup(
     ],
     python_requires=">=3.5",
     extras_require={
-        'pipenv':  ["pipenv"],
+        'pipenv': ["pipenv"],
+        'conda': ["pyyaml"]
     }
 )
