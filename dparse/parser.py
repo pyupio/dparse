@@ -8,7 +8,7 @@ from io import StringIO
 from configparser import ConfigParser, NoOptionError
 
 
-from .regex import URL_REGEX, HASH_REGEX
+from .regex import HASH_REGEX
 
 from .dependencies import DependencyFile, Dependency
 from packaging.requirements import Requirement as PackagingRequirement, InvalidRequirement
@@ -175,10 +175,11 @@ class Parser(object):
         :param line:
         :return:
         """
-        matches = URL_REGEX.findall(line)
-        if matches:
-            url = matches[0]
-            return url if url.endswith("/") else url + "/"
+        groups = re.split(pattern="[=\s]+", string=line.strip(), maxsplit=100)
+
+        if len(groups) >= 2:
+            return groups[1] if groups[1].endswith("/") else groups[1] + "/"
+
         return None
 
     @classmethod
@@ -345,6 +346,7 @@ class PipfileParser(Parser):
                             )
         except (toml.TomlDecodeError, IndexError) as e:
             pass
+
 
 class PipfileLockParser(Parser):
 
