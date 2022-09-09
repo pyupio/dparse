@@ -1,6 +1,11 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
+
+import sys
+
+from dparse.errors import MalformedDependencyFileError
+
 """Tests for `dparse.parser`"""
 
 from dparse.parser import parse, Parser
@@ -305,10 +310,94 @@ ds name < "pypi"
 
 def test_pipfile_lock_with_invalid_json():
     content = """{
-    "_meta": 
+    "_meta":
         "hash": {
             "sha256": "8b5635a4f7b069ae6661115b9eaa15466f7cd96794af5d131735a3638be101fb"
         },
 }"""
-    dep_file = parse(content, file_type=filetypes.pipfile_lock)
-    assert not dep_file.dependencies
+    throw = None
+
+    try:
+        dep_file = parse(content, file_type=filetypes.pipfile_lock)
+    except Exception as e:
+        throw = e
+
+    assert isinstance(throw, MalformedDependencyFileError)
+
+
+def test_poetry_lock():
+    content = """
+    [[package]]
+    name = "certifi"
+    version = "2022.6.15"
+    description = "Python package for providing Mozilla's CA Bundle."
+    category = "main"
+    optional = false
+    python-versions = ">=3.6"
+
+    [[package]]
+    name = "attrs"
+    version = "22.1.0"
+    description = "Classes Without Boilerplate"
+    category = "dev"
+    optional = false
+    python-versions = ">=3.5"
+
+    [package.extras]
+    dev = ["coverage[toml] (>=5.0.2)", "hypothesis", "pympler", "pytest (>=4.3.0)", "mypy (>=0.900,!=0.940)", "pytest-mypy-plugins", "zope.interface", "furo", "sphinx", "sphinx-notfound-page", "pre-commit", "cloudpickle"]
+    docs = ["furo", "sphinx", "zope.interface", "sphinx-notfound-page"]
+    tests = ["coverage[toml] (>=5.0.2)", "hypothesis", "pympler", "pytest (>=4.3.0)", "mypy (>=0.900,!=0.940)", "pytest-mypy-plugins", "zope.interface", "cloudpickle"]
+    tests_no_zope = ["coverage[toml] (>=5.0.2)", "hypothesis", "pympler", "pytest (>=4.3.0)", "mypy (>=0.900,!=0.940)", "pytest-mypy-plugins", "cloudpickle"]
+
+    [metadata]
+    lock-version = "1.1"
+    python-versions = "^3.9"
+    content-hash = "96e49f07dcfd53e21489b9a7f3451d3b76515f33496173d989395e1898ae9a26"
+
+    [metadata.files]
+    certifi = []
+    attrs = []
+    """
+
+    dep_file = parse(content, file_type=filetypes.poetry_lock)
+
+    assert dep_file.dependencies[0].name == 'certifi'
+    assert dep_file.dependencies[0].specs == SpecifierSet('==2022.6.15')
+    assert dep_file.dependencies[0].dependency_type == 'poetry.lock'
+    assert dep_file.dependencies[0].section == 'main'
+    assert dep_file.dependencies[0].hashes == ()
+
+    assert dep_file.dependencies[1].name == 'attrs'
+    assert dep_file.dependencies[1].specs == SpecifierSet('==22.1.0')
+    assert dep_file.dependencies[1].dependency_type == 'poetry.lock'
+    assert dep_file.dependencies[1].section == 'dev'
+    assert dep_file.dependencies[1].hashes == ()
+
+
+def test_poetry_lock_with_invalid_toml():
+    content = """
+    [[package]
+    name = "certifi"
+    version = "2022.6.15"
+    description = "Python package for providing Mozilla's CA Bundle."
+    category = "main"
+    optional = false
+    python-versions = ">=3.6"
+
+    [metadata]
+    lock-version = "1.1"
+    python-versions = "^3.9"
+    content-hash = "96e49f07dcfd53e21489b9a7f3451d3b76515f33496173d989395e1898ae9a26"
+
+    [metadata.files]
+    certifi = []
+    """
+
+    throw = None
+
+    try:
+        dep_file = parse(content, file_type=filetypes.poetry_lock)
+    except Exception as e:
+        throw = e
+
+    assert isinstance(throw, MalformedDependencyFileError)
