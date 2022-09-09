@@ -2,6 +2,13 @@
 History
 =======
 
+0.6.0 (2022-09-09)
+------------------
+
+* Adds support for parsing poetry.lock files
+* Adds a way to resolve all the linked dependencies in one Dependency File
+* Throws exceptions if found in the parsing process (This may be a breaking change)
+
 0.5.2 (2022-08-09)
 ------------------
 
