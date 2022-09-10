@@ -456,7 +456,8 @@ class PoetryLockParser(Parser):
                 for dep in dependencies:
                     try:
                         name = dep['name']
-                        spec = f"=={Version(dep['version'])}"
+                        spec = "=={version}".format(
+                            version=Version(dep['version']))
                         section = dep['category']
                     except KeyError:
                         raise KeyError("Malformed poetry lock file")

@@ -1,0 +1,7 @@
+pipenv
+pyyaml
+pytest
+pytest-cov
+codecov
+toml
+packaging

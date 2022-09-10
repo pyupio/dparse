@@ -1,0 +1,26 @@
+name: Static Code Analysis
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: actions/setup-python@v2
+        with:
+          python-version: '3.6'
+
+      - run: pip install bandit flake8
+
+      - run: bandit pyupio --recursive
+        continue-on-error: true
+
+      - run: flake8 pyupio/ --select 'E' --ignore=E123,E131,E126,E302,E231,E305,E501,E128,E303,E122,E401,E127,E265,E241,E125,E226,E121,E129,E262,E124,E261,E731,E306
+        continue-on-error: true
