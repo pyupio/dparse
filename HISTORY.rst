@@ -2,6 +2,11 @@
 History
 =======
 
+0.6.2 (2022-09-19)
+------------------
+
+* Fixed bug: always call the parent from the PATH in the resolve_file function.
+
 0.6.1 (2022-09-19)
 ------------------
 
