@@ -18,7 +18,7 @@ requirements = [
 
 setup(
     name='dparse',
-    version='0.6.0',
+    version='0.6.1',
     description="A parser for Python dependency files",
     long_description=readme + '\n\n' + history,
     long_description_content_type='text/x-rst',
