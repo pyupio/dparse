@@ -8,6 +8,7 @@ import re
 from io import StringIO
 
 from configparser import ConfigParser, NoOptionError
+from pathlib import PurePath
 
 from .errors import MalformedDependencyFileError
 from .regex import HASH_REGEX
@@ -199,12 +200,10 @@ class Parser(object):
         :return:
         """
         line = line.replace("-r ", "").replace("--requirement ", "")
-        parts = file_path.split("/")
+        normalized_path = PurePath(file_path)
         if " #" in line:
             line = line.split("#")[0].strip()
-        if len(parts) == 1:
-            return line
-        return "/".join(parts[:-1]) + "/" + line
+        return str(normalized_path.joinpath(line))
 
 
 class RequirementsTXTParser(Parser):
