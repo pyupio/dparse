@@ -3,6 +3,7 @@
 from __future__ import unicode_literals
 
 import sys
+from pathlib import PurePath
 
 from dparse.errors import MalformedDependencyFileError
 
@@ -92,6 +93,11 @@ def test_resolve_file():
 
     line = "-r req.txt"
     assert Parser.resolve_file("", line) == "req.txt"
+
+    line = "-r req_2.txt"
+    path = PurePath("safety", "tests", "foo.txt")
+    assert Parser.resolve_file(str(path), line) == str(
+        PurePath("safety", "tests", "req_2.txt"))
 
 
 def test_index_server():

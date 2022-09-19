@@ -203,7 +203,7 @@ class Parser(object):
         normalized_path = PurePath(file_path)
         if " #" in line:
             line = line.split("#")[0].strip()
-        return str(normalized_path.joinpath(line))
+        return str(normalized_path.parent.joinpath(line))
 
 
 class RequirementsTXTParser(Parser):
