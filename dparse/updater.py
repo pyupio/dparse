@@ -3,8 +3,13 @@ from __future__ import absolute_import, print_function, unicode_literals
 import re
 import json
 import tempfile
-import toml
 import os
+import sys
+
+if sys.version_info >= (3, 11):
+    import tomllib
+else:
+    import tomli as tomllib
 
 
 class RequirementsTXTUpdater(object):
@@ -79,7 +84,7 @@ class SetupCFGUpdater(CondaYMLUpdater):
 class PipfileUpdater(object):
     @classmethod
     def update(cls, content, dependency, version, spec="==", hashes=()):
-        data = toml.loads(content)
+        data = tomllib.loads(content)
         if data:
             for package_type in ['packages', 'dev-packages']:
                 if package_type in data:

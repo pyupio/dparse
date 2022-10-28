@@ -3,5 +3,5 @@ pyyaml
 pytest
 pytest-cov
 codecov
-toml
+tomli; python_version < "3.11"
 packaging
