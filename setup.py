@@ -13,7 +13,7 @@ with open('HISTORY.rst') as history_file:
 
 requirements = [
     "packaging",
-    "toml",
+    "tomli; python_version < '3.11'",
 ]
 
 setup(
