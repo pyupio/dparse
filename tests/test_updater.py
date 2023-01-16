@@ -455,12 +455,6 @@ django-allauth = "*"
 
 toml = "*"
     """
-    import pipenv.project
-    monkeypatch.setattr(
-        pipenv.project.pipfile.Pipfile,
-        'find',
-        lambda max_depth: '/tmp/MockPipFile'
-    )
     dep_file = parse(content=content, file_type=filetypes.pipfile)
     dep = dep_file.dependencies[0]
     new_content = PipfileUpdater.update(content, version="2.1", dependency=dep)
