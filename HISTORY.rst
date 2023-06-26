@@ -2,6 +2,12 @@
 History
 =======
 
+0.6.3 (2023-06-26)
+------------------
+
+* Use the modern tomli/tomllib to parse TOML files. (thanks @mgorny)
+* Drop Python 3.5 from our CI.
+
 0.6.2 (2022-09-19)
 ------------------
 
