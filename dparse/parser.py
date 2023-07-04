@@ -462,7 +462,7 @@ class PoetryLockParser(Parser):
                         name = dep['name']
                         spec = "=={version}".format(
                             version=Version(dep['version']))
-                        section = dep['category']
+                        section = dep.get('category')
                     except KeyError:
                         raise KeyError("Malformed poetry lock file")
                     except InvalidVersion:

@@ -331,7 +331,7 @@ def test_pipfile_lock_with_invalid_json():
     assert isinstance(throw, MalformedDependencyFileError)
 
 
-def test_poetry_lock():
+def test_poetry_lock_version_lower_than_1_5():
     content = """
     [[package]]
     name = "certifi"
@@ -407,3 +407,52 @@ def test_poetry_lock_with_invalid_toml():
         throw = e
 
     assert isinstance(throw, MalformedDependencyFileError)
+
+
+def test_poetry_lock_version_greater_than_1_5():
+    """In poetry's version 1.5, the `category` field was removed. We need then to be able to handle such scenario."""
+
+    content = """
+    [[package]]
+    name = "certifi"
+    version = "2022.6.15"
+    description = "Python package for providing Mozilla's CA Bundle."
+    optional = false
+    python-versions = ">=3.6"
+
+    [[package]]
+    name = "attrs"
+    version = "22.1.0"
+    description = "Classes Without Boilerplate"
+    optional = false
+    python-versions = ">=3.5"
+
+    [package.extras]
+    dev = ["coverage[toml] (>=5.0.2)", "hypothesis", "pympler", "pytest (>=4.3.0)", "mypy (>=0.900,!=0.940)", "pytest-mypy-plugins", "zope.interface", "furo", "sphinx", "sphinx-notfound-page", "pre-commit", "cloudpickle"]
+    docs = ["furo", "sphinx", "zope.interface", "sphinx-notfound-page"]
+    tests = ["coverage[toml] (>=5.0.2)", "hypothesis", "pympler", "pytest (>=4.3.0)", "mypy (>=0.900,!=0.940)", "pytest-mypy-plugins", "zope.interface", "cloudpickle"]
+    tests_no_zope = ["coverage[toml] (>=5.0.2)", "hypothesis", "pympler", "pytest (>=4.3.0)", "mypy (>=0.900,!=0.940)", "pytest-mypy-plugins", "cloudpickle"]
+
+    [metadata]
+    lock-version = "1.1"
+    python-versions = "^3.9"
+    content-hash = "96e49f07dcfd53e21489b9a7f3451d3b76515f33496173d989395e1898ae9a26"
+
+    [metadata.files]
+    certifi = []
+    attrs = []
+    """
+
+    dep_file = parse(content, file_type=filetypes.poetry_lock)
+
+    assert dep_file.dependencies[0].name == 'certifi'
+    assert dep_file.dependencies[0].specs == SpecifierSet('==2022.6.15')
+    assert dep_file.dependencies[0].dependency_type == 'poetry.lock'
+    assert dep_file.dependencies[0].section is None
+    assert dep_file.dependencies[0].hashes == ()
+
+    assert dep_file.dependencies[1].name == 'attrs'
+    assert dep_file.dependencies[1].specs == SpecifierSet('==22.1.0')
+    assert dep_file.dependencies[1].dependency_type == 'poetry.lock'
+    assert dep_file.dependencies[1].section is None
+    assert dep_file.dependencies[1].hashes == ()
