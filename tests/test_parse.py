@@ -407,3 +407,125 @@ def test_poetry_lock_with_invalid_toml():
         throw = e
 
     assert isinstance(throw, MalformedDependencyFileError)
+
+
+def test_pyproject_toml() -> None:
+    content = """
+    [project]
+    name = "my_package"
+    authors = [
+        {name = "John Doe", email = "john.doe@email"},
+    ]
+    description = "My package description"
+    dependencies = [
+        "requests",
+        'importlib-metadata; python_version<"3.8"',
+        "packaging~=23.1",
+        "setuptools # comment"
+    ]
+
+    [project.optional-dependencies]
+    pdf = ["ReportLab>=1.2"]
+    rest = ["pack ==1.1, ==1.3"]
+    """
+
+    dep_file = parse(content, file_type=filetypes.pyproject_toml)
+
+    assert len(dep_file.dependencies) == 6
+
+    assert dep_file.dependencies[0].name == "requests"
+    assert dep_file.dependencies[0].specs == SpecifierSet("")
+    assert dep_file.dependencies[0].dependency_type == "pyproject.toml"
+    assert dep_file.dependencies[0].section == "dependencies"
+
+    assert dep_file.dependencies[1].name == "importlib-metadata"
+    assert dep_file.dependencies[1].specs == SpecifierSet("")
+    assert dep_file.dependencies[1].dependency_type == "pyproject.toml"
+    assert dep_file.dependencies[1].section == "dependencies"
+
+    assert dep_file.dependencies[2].name == "packaging"
+    assert dep_file.dependencies[2].specs == SpecifierSet("~=23.1")
+    assert dep_file.dependencies[2].dependency_type == "pyproject.toml"
+    assert dep_file.dependencies[2].section == "dependencies"
+
+    assert dep_file.dependencies[3].name == "setuptools"
+    assert dep_file.dependencies[3].specs == SpecifierSet("")
+    assert dep_file.dependencies[3].dependency_type == "pyproject.toml"
+    assert dep_file.dependencies[3].section == "dependencies"
+
+    assert dep_file.dependencies[4].name == "ReportLab"
+    assert dep_file.dependencies[4].specs == SpecifierSet(">=1.2")
+    assert dep_file.dependencies[4].dependency_type == "pyproject.toml"
+    assert dep_file.dependencies[4].section == "pdf"
+
+    assert dep_file.dependencies[5].name == "pack"
+    assert dep_file.dependencies[5].specs == SpecifierSet("==1.1, ==1.3")
+    assert dep_file.dependencies[5].dependency_type == "pyproject.toml"
+    assert dep_file.dependencies[5].section == "rest"
+
+
+def test_pyproject_toml_no_deps() -> None:
+    content = """
+    [project]
+    name = "my_package"
+    authors = [
+        {name = "John Doe", email = "john.doe@email"},
+    ]
+    description = "My package description"
+    """
+
+    dep_file = parse(content, file_type=filetypes.pyproject_toml)
+
+    assert len(dep_file.dependencies) == 0
+
+
+def test_pyproject_toml_no_main_deps() -> None:
+    content = """
+    [project]
+    name = "my_package"
+    authors = [
+        {name = "John Doe", email = "john.doe@email"},
+    ]
+    description = "My package description"
+
+    [project.optional-dependencies]
+    pdf = ["ReportLab>=1.2"]
+    rest = ["pack ==1.1, ==1.3"]
+    """
+
+    dep_file = parse(content, file_type=filetypes.pyproject_toml)
+
+    assert len(dep_file.dependencies) == 2
+
+    assert dep_file.dependencies[0].name == "ReportLab"
+    assert dep_file.dependencies[0].specs == SpecifierSet(">=1.2")
+    assert dep_file.dependencies[0].dependency_type == "pyproject.toml"
+    assert dep_file.dependencies[0].section == "pdf"
+
+    assert dep_file.dependencies[1].name == "pack"
+    assert dep_file.dependencies[1].specs == SpecifierSet("==1.1, ==1.3")
+    assert dep_file.dependencies[1].dependency_type == "pyproject.toml"
+    assert dep_file.dependencies[1].section == "rest"
+
+
+def test_pyproject_toml_no_extra() -> None:
+    content = """
+    [project]
+    name = "my_package"
+    authors = [
+        {name = "John Doe", email = "john.doe@email"},
+    ]
+    description = "My package description"
+    dependencies = [
+        "requests",
+    ]
+    """
+
+    dep_file = parse(content, file_type=filetypes.pyproject_toml)
+
+    assert len(dep_file.dependencies) == 1
+
+    assert dep_file.dependencies[0].name == "requests"
+    assert dep_file.dependencies[0].specs == SpecifierSet("")
+    assert dep_file.dependencies[0].dependency_type == "pyproject.toml"
+    assert dep_file.dependencies[0].section == "dependencies"
