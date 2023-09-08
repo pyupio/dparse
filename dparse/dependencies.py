@@ -1,13 +1,10 @@
-# -*- coding: utf-8 -*-
-from __future__ import unicode_literals, absolute_import
-
 import json
 from json import JSONEncoder
 
 from . import filetypes, errors
 
 
-class Dependency(object):
+class Dependency:
     """
 
     """
@@ -102,7 +99,7 @@ class DparseJSONEncoder(JSONEncoder):
         return JSONEncoder.default(self, o)
 
 
-class DependencyFile(object):
+class DependencyFile:
     """
 
     """
