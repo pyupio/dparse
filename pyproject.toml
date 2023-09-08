@@ -1,0 +1,43 @@
+
+[project]
+name = "dparse"
+version = "0.6.3"
+description = "A parser for Python dependency files"
+keywords = ["dparse"]
+readme = "README.rst"
+authors = [
+    {name = "Jannis Gebauer", email = "support@pyup.io"},
+]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Natural Language :: English",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.6",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+]
+requires-python = ">=3.6"
+dependencies = [
+    "packaging",
+    "tomli; python_version < '3.11'",
+]
+license = {text = "MIT license"}
+
+[project.urls]
+Homepage = "https://github.com/pyupio/dparse"
+
+[project.optional-dependencies]
+pipenv = [
+    "pipenv<=2022.12.19",
+]
+conda = [
+    "pyyaml",
+]
+
+[build-system]
+requires = ["pdm-backend"]
+build-backend = "pdm.backend"
