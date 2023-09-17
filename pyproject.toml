@@ -37,7 +37,3 @@ pipenv = [
 conda = [
     "pyyaml",
 ]
-
-[build-system]
-requires = ["pdm-backend"]
-build-backend = "pdm.backend"
