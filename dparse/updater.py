@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-from __future__ import absolute_import, print_function, unicode_literals
 import re
 import json
 import tempfile
@@ -12,7 +10,7 @@ else:
     import tomli as tomllib
 
 
-class RequirementsTXTUpdater(object):
+class RequirementsTXTUpdater:
     SUB_REGEX = r"^{}(?=\s*\r?\n?$)"
 
     @classmethod
@@ -81,7 +79,7 @@ class SetupCFGUpdater(CondaYMLUpdater):
     pass
 
 
-class PipfileUpdater(object):
+class PipfileUpdater:
     @classmethod
     def update(cls, content, dependency, version, spec="==", hashes=()):
         data = tomllib.loads(content)
@@ -107,7 +105,7 @@ class PipfileUpdater(object):
         return data
 
 
-class PipfileLockUpdater(object):
+class PipfileLockUpdater:
     @classmethod
     def update(cls, content, dependency, version, spec="==", hashes=()):
         data = json.loads(content)
