@@ -1,7 +1,0 @@
-pipenv<=2022.12.19
-pyyaml
-pytest
-pytest-cov
-codecov
-tomli; python_version < "3.11"
-packaging
