@@ -3,8 +3,6 @@ from collections import OrderedDict
 import re
 import sys
 
-from io import StringIO
-
 from configparser import ConfigParser, NoOptionError
 from pathlib import PurePath
 
@@ -305,7 +303,7 @@ class ToxINIParser(Parser):
         :return:
         """
         parser = ConfigParser()
-        parser.readfp(StringIO(self.obj.content))
+        parser.read_string(self.obj.content)
         for section in parser.sections():
             try:
                 content = parser.get(section=section, option="deps")
@@ -413,7 +411,7 @@ class PipfileLockParser(Parser):
 class SetupCfgParser(Parser):
     def parse(self):
         parser = ConfigParser()
-        parser.readfp(StringIO(self.obj.content))
+        parser.read_string(self.obj.content)
         for section in parser.values():
             if section.name == 'options':
                 options = 'install_requires', 'setup_requires', 'test_require'
