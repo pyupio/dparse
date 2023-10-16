@@ -1,12 +1,7 @@
-# -*- coding: utf-8 -*-
-from __future__ import unicode_literals, absolute_import
-
 import os
 from collections import OrderedDict
 import re
 import sys
-
-from io import StringIO
 
 from configparser import ConfigParser, NoOptionError
 from pathlib import PurePath
@@ -80,7 +75,7 @@ def setuptools_parse_requirements_backport(strs):  # pragma: no cover
         yield PackagingRequirement(line)
 
 
-class RequirementsTXTLineParser(object):
+class RequirementsTXTLineParser:
     """
 
     """
@@ -112,7 +107,7 @@ class RequirementsTXTLineParser(object):
         return dep
 
 
-class Parser(object):
+class Parser:
     """
 
     """
@@ -132,8 +127,7 @@ class Parser(object):
         :param lineno:
         :return:
         """
-        for line in self.lines[lineno:]:
-            yield line
+        yield from self.lines[lineno:]
 
     @property
     def lines(self):
@@ -241,7 +235,7 @@ class RequirementsTXTParser(Parser):
                 req_file_path = self.resolve_file(self.obj.path, line)
 
                 if self.resolve and os.path.exists(req_file_path):
-                    with open(req_file_path, 'r') as f:
+                    with open(req_file_path) as f:
                         content = f.read()
 
                         dep_file = DependencyFile(
@@ -309,7 +303,7 @@ class ToxINIParser(Parser):
         :return:
         """
         parser = ConfigParser()
-        parser.readfp(StringIO(self.obj.content))
+        parser.read_string(self.obj.content)
         for section in parser.sections():
             try:
                 content = parser.get(section=section, option="deps")
@@ -417,7 +411,7 @@ class PipfileLockParser(Parser):
 class SetupCfgParser(Parser):
     def parse(self):
         parser = ConfigParser()
-        parser.readfp(StringIO(self.obj.content))
+        parser.read_string(self.obj.content)
         for section in parser.values():
             if section.name == 'options':
                 options = 'install_requires', 'setup_requires', 'test_require'
