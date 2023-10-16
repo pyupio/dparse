@@ -474,6 +474,35 @@ class PoetryLockParser(Parser):
             raise MalformedDependencyFileError(info=str(e))
 
 
+class PyprojectTomlParser(Parser):
+    def parse(self) -> None:
+        """Parse a pyproject.toml file.
+
+        Refer to https://setuptools.pypa.io/en/latest/userguide/pyproject_config.html
+        for configuration specification.
+        """
+        try:
+            cfg = tomllib.loads(self.obj.content)
+        except (tomllib.TOMLDecodeError, IndexError) as e:
+            raise MalformedDependencyFileError(info=str(e))
+
+        if not cfg or "project" not in cfg:
+            return
+
+        sections = {
+            "dependencies": cfg["project"].get("dependencies", []),
+            **cfg["project"].get("optional-dependencies", {}),
+        }
+
+        for section, lines in sections.items():
+            for line in lines:
+                req = RequirementsTXTLineParser.parse(line)
+                if req:
+                    req.dependency_type = self.obj.file_type
+                    req.section = section
+                    self.obj.dependencies.append(req)
+
+
 def parse(content, file_type=None, path=None, sha=None, marker=((), ()),
           parser=None, resolve=False):
     """

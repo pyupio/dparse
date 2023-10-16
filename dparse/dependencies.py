@@ -145,6 +145,8 @@ class DependencyFile:
                     self.parser = parser_class.SetupCfgParser
                 elif file_type == filetypes.poetry_lock:
                     self.parser = parser_class.PoetryLockParser
+                elif file_type == filetypes.pyproject_toml:
+                    self.parser = parser_class.PyprojectTomlParser
 
             elif path is not None:
                 if path.endswith((".txt", ".in")):
@@ -161,6 +163,8 @@ class DependencyFile:
                     self.parser = parser_class.SetupCfgParser
                 elif path.endswith(filetypes.poetry_lock):
                     self.parser = parser_class.PoetryLockParser
+                elif path.endswith(filetypes.pyproject_toml):
+                    self.parser = parser_class.PyprojectTomlParser
 
         if not hasattr(self, "parser"):
             raise errors.UnknownDependencyFileError
