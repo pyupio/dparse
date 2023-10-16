@@ -40,6 +40,8 @@ Supported Files
 +------------------+------------+-----------+
 | setup.cfg        | no (# 4_)  | no (# 4_) |
 +------------------+------------+-----------+
+| pyproject.toml   | yes        | no        |
++------------------+------------+-----------+
 
 .. _2: https://github.com/pyupio/dparse/issues/2
 .. _3: https://github.com/pyupio/dparse/issues/3
