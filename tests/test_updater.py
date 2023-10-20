@@ -2,6 +2,7 @@
 
 """Tests for `dparse.updater`"""
 
+import pytest
 from dparse.parser import parse
 from dparse.updater import RequirementsTXTUpdater, CondaYMLUpdater, ToxINIUpdater, PipfileLockUpdater, PipfileUpdater
 from dparse import filetypes
@@ -36,6 +37,7 @@ def test_update_tox_ini():
     assert ToxINIUpdater.update(content=content, dependency=dep, version="2.9.5") == new_content
 
 
+@pytest.mark.conda
 def test_update_conda_yml():
     content = "name: my_env\n" \
               "dependencies:\n" \
@@ -434,7 +436,7 @@ def test_update_requirements_unfinished_line():
     assert RequirementsTXTUpdater.update(content=content, version=version,
                                          dependency=dep) == new_content
 
-
+@pytest.mark.pipenv
 def test_update_pipfile(monkeypatch):
     content = """[[source]]
 

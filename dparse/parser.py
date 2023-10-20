@@ -370,7 +370,7 @@ class PipfileParser(Parser):
                                     name=name, specs=SpecifierSet(specs),
                                     dependency_type=filetypes.pipfile,
                                     line=''.join([name, specs]),
-                                    section=package_type
+                                    sections=[package_type]
                                 )
                             )
         except (tomllib.TOMLDecodeError, IndexError):
@@ -401,7 +401,7 @@ class PipfileLockParser(Parser):
                                     dependency_type=filetypes.pipfile_lock,
                                     hashes=hashes,
                                     line=''.join([name, specs]),
-                                    section=package_type
+                                    sections=[package_type]
                                 )
                             )
         except ValueError as e:
@@ -441,36 +441,42 @@ class PoetryLockParser(Parser):
         Parse a poetry.lock
         """
         try:
-            data = tomllib.loads(self.obj.content)
-            pkg_key = 'package'
-            if data:
-                try:
-                    dependencies = data[pkg_key]
-                except KeyError:
-                    raise KeyError(
-                        "Poetry lock file is missing the package section")
+            from poetry.packages.locker import Locker
+            from pathlib import Path
 
-                for dep in dependencies:
-                    try:
+            lock_path = Path(self.obj.path)
+
+            repository = Locker(lock_path, {}).locked_repository()
+            for pkg in repository.packages:
+                self.obj.dependencies.append(
+                    Dependency(
+                        name=pkg.name, specs=SpecifierSet(f"=={pkg.version.text}"),
+                        dependency_type=filetypes.poetry_lock,
+                        line=pkg.to_dependency().to_pep_508(),
+                        sections=list(pkg.dependency_group_names())
+                    )
+                )
+        except Exception:
+            try:
+                data = tomllib.loads(self.obj.content)
+                pkg_key = 'package'
+                if data:
+                    dependencies = data[pkg_key]
+                    for dep in dependencies:
                         name = dep['name']
                         spec = "=={version}".format(
                             version=Version(dep['version']))
-                        section = dep.get('category')
-                    except KeyError:
-                        raise KeyError("Malformed poetry lock file")
-                    except InvalidVersion:
-                        continue
-
-                    self.obj.dependencies.append(
-                        Dependency(
-                            name=name, specs=SpecifierSet(spec),
-                            dependency_type=filetypes.poetry_lock,
-                            line=''.join([name, spec]),
-                            section=section
+                        sections = [dep['category']] if "category" in dep else []
+                        self.obj.dependencies.append(
+                            Dependency(
+                                name=name, specs=SpecifierSet(spec),
+                                dependency_type=filetypes.poetry_lock,
+                                line=''.join([name, spec]),
+                                sections=sections
+                            )
                         )
-                    )
-        except (tomllib.TOMLDecodeError, IndexError) as e:
-            raise MalformedDependencyFileError(info=str(e))
+            except Exception as e:
+                raise MalformedDependencyFileError(info=str(e))
 
 
 class PyprojectTomlParser(Parser):

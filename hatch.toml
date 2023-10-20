@@ -1,0 +1,79 @@
+[envs.default]
+dependencies = [
+  "coverage[toml]>=6.5",
+  "pytest",
+  "commitizen"
+]
+[envs.default.scripts]
+test = "pytest {args:tests}"
+test-cov = 'coverage run -m pytest -m "conda or poetry or pipenv" {args:tests}'
+cov-report = [
+  "coverage combine",
+  "coverage report --show-missing",
+]
+cov = [
+  "test-cov",
+  "cov-report",
+]
+bump = "cz bump --check-consistency --changelog"
+dev-bump = "cz bump --devrelease {args} --changelog"
+local-bump = "cz bump {args} --check-consistency --changelog --files-only"
+
+
+[envs.test]
+features = [
+  "all"
+]
+[envs.test.scripts]
+test = 'pytest -m "conda or poetry or pipenv" {args:tests}'
+test-cov = 'coverage run -m pytest -m "conda or poetry or pipenv" {args:tests}'
+
+
+[envs.all]
+type = "container"
+
+[envs.all.overrides]
+matrix.optionals.features = [
+  { value = "all", if = ["all-extras"] },
+  { value = "conda", if = ["conda"] },
+  { value = "pipenv", if = ["pipenv"] },
+  { value = "poetry", if = ["poetry"] },
+]
+matrix.optionals.scripts = [
+  {key = "test", value = 'pytest -m "conda" {args:tests}', if = ["conda"] },
+  {key = "test", value = 'pytest -m "pipenv" {args:tests}', if = ["pipenv"] },
+  {key = "test", value = 'pytest -m "poetry" {args:tests}', if = ["poetry"] },
+  {key = "test", value = 'pytest -m "not conda and not poetry and not pipenv" {args:tests}', if = ["no-extras"] },
+  {key = "test", value = 'pytest -m "conda or poetry or pipenv" {args:tests}', if = ["all-extras"] },
+]
+
+[[envs.all.matrix]]
+python = ["3.7", "3.8", "3.9", "3.10", "3.11", "3.12"]
+optionals = ["conda", "pipenv", "poetry", "all-extras", "no-extras"]
+
+[envs.lint]
+detached = true
+dependencies = [
+  "black",
+  "mypy",
+  "ruff",
+]
+[envs.lint.scripts]
+typing = "mypy --install-types --non-interactive {args:dparse tests}"
+style = [
+  "ruff {args:.}",
+  "black --check --diff {args:.}",
+]
+fmt = [
+  "black {args:.}",
+  "ruff --fix {args:.}",
+  "style",
+]
+all = [
+  "style",
+  "typing",
+]
+
+
+[build.targets.wheel]
+packages = ["dparse"]

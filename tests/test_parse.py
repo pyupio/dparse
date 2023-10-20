@@ -1,7 +1,9 @@
 #!/usr/bin/env python
 
 import sys
-from pathlib import PurePath
+from pathlib import Path, PurePath
+
+import pytest
 
 from dparse.errors import MalformedDependencyFileError
 
@@ -33,6 +35,7 @@ def test_tox_ini_with_invalid_requirement():
     assert len(dep_file.dependencies) == 0
 
 
+@pytest.mark.conda
 def test_conda_file_with_invalid_requirement():
 
     content = "name: my_env\n" \
@@ -43,14 +46,14 @@ def test_conda_file_with_invalid_requirement():
     dep_file = parse(content, file_type=filetypes.conda_yml)
     assert len(dep_file.dependencies) == 0
 
-
+@pytest.mark.conda
 def test_conda_file_invalid_yml():
 
     content = "wawth:dda : awd:\ndlll"
     dep_file = parse(content, file_type=filetypes.conda_yml)
     assert dep_file.dependencies == []
 
-
+@pytest.mark.conda
 def test_conda_file_marked_line():
     content = "name: my_env\n" \
               "dependencies:\n" \
@@ -83,11 +86,13 @@ def test_tox_ini_marked_line():
 
 
 def test_resolve_file():
+    req_path = str(Path("/req.txt"))
+
     line = "-r req.txt"
-    assert Parser.resolve_file("/", line) == "/req.txt"
+    assert Parser.resolve_file("/", line) == req_path
 
     line = "-r req.txt # mysterious comment"
-    assert Parser.resolve_file("/", line) == "/req.txt"
+    assert Parser.resolve_file("/", line) == req_path
 
     line = "-r req.txt"
     assert Parser.resolve_file("", line) == "req.txt"
@@ -178,12 +183,15 @@ def test_requirements_parse_unsupported_line_start():
 def test_file_resolver():
     content = "-r production/requirements.txt\n" \
               "--requirement test.txt\n"
+    
+    req_path = str(Path("/production/requirements.txt"))
+    test_path = str(Path("/test.txt"))
 
     dep_file = parse(content=content, path="/", file_type=filetypes.requirements_txt)
 
     assert dep_file.resolved_files == [
-        "/production/requirements.txt",
-        "/test.txt"
+        req_path,
+        test_path
     ]
 
     dep_file = parse(content=content, file_type=filetypes.requirements_txt)
@@ -368,13 +376,13 @@ def test_poetry_lock_version_lower_than_1_5():
     assert dep_file.dependencies[0].name == 'certifi'
     assert dep_file.dependencies[0].specs == SpecifierSet('==2022.6.15')
     assert dep_file.dependencies[0].dependency_type == 'poetry.lock'
-    assert dep_file.dependencies[0].section == 'main'
+    assert dep_file.dependencies[0].sections == ['main']
     assert dep_file.dependencies[0].hashes == ()
 
     assert dep_file.dependencies[1].name == 'attrs'
     assert dep_file.dependencies[1].specs == SpecifierSet('==22.1.0')
     assert dep_file.dependencies[1].dependency_type == 'poetry.lock'
-    assert dep_file.dependencies[1].section == 'dev'
+    assert dep_file.dependencies[1].sections == ['dev']
     assert dep_file.dependencies[1].hashes == ()
 
 
@@ -446,13 +454,13 @@ def test_poetry_lock_version_greater_than_1_5():
     assert dep_file.dependencies[0].name == 'certifi'
     assert dep_file.dependencies[0].specs == SpecifierSet('==2022.6.15')
     assert dep_file.dependencies[0].dependency_type == 'poetry.lock'
-    assert dep_file.dependencies[0].section is None
+    assert dep_file.dependencies[0].sections == []
     assert dep_file.dependencies[0].hashes == ()
 
     assert dep_file.dependencies[1].name == 'attrs'
     assert dep_file.dependencies[1].specs == SpecifierSet('==22.1.0')
     assert dep_file.dependencies[1].dependency_type == 'poetry.lock'
-    assert dep_file.dependencies[1].section is None
+    assert dep_file.dependencies[1].sections == []
     assert dep_file.dependencies[1].hashes == ()
 
 
