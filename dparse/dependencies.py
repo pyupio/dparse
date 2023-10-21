@@ -11,7 +11,7 @@ class Dependency:
 
     def __init__(self, name, specs, line, source="pypi", meta={}, extras=[],
                  line_numbers=None, index_server=None, hashes=(),
-                 dependency_type=None, section=None):
+                 dependency_type=None, sections=None):
         """
 
         :param name:
@@ -35,7 +35,7 @@ class Dependency:
         self.hashes = hashes
         self.dependency_type = dependency_type
         self.extras = extras
-        self.section = section
+        self.sections = sections
 
     def __str__(self):  # pragma: no cover
         """
@@ -64,7 +64,7 @@ class Dependency:
             "hashes": self.hashes,
             "dependency_type": self.dependency_type,
             "extras": self.extras,
-            "section": self.section
+            "sections": self.sections
         }
 
     @classmethod

@@ -1,0 +1,86 @@
+name: CI
+
+on:
+    push:
+      branches:
+        - 'main'
+    pull_request:
+      types: [opened, synchronize, reopened]
+
+env:
+    BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
+
+jobs:
+    test:
+        name: Python ${{ matrix.python-version }} on ${{ startsWith(matrix.os, 'macos-') && 'macOS' || startsWith(matrix.os, 'windows-') && 'Windows' || 'Linux' }}
+        runs-on: ${{ matrix.os }}
+        strategy:
+          fail-fast: false
+          matrix:
+            python-version: [ "3.7", "3.8", "3.9", "3.10", "3.11", "3.12"]
+            os: [ubuntu-latest, windows-latest, macos-latest]
+        steps:
+            - uses: actions/checkout@v4
+
+            - name: Set up Python ${{ matrix.python-version }}
+              uses: actions/setup-python@v4
+              with:
+                python-version: ${{ matrix.python-version }}
+
+            - name: Install Hatch
+              run: pip install --upgrade hatch
+
+            - name: Run tests and track code coverage
+              run: hatch run test:cov
+
+    # TODO: Enforce quality, security and style checks.
+
+    bump_and_build:
+        needs: test
+        name: Bump and Build version [${{ github.head_ref || github.ref_name }}]
+        runs-on: ubuntu-latest
+        steps:
+            -   uses: actions/checkout@v4
+                with:
+                    fetch-depth: 0
+                    token: ${{ secrets.PAT }}
+
+            -   run: |
+                    git config user.name github-actions
+                    git config user.email github-actions@github.com
+
+            -   name: Set up Python
+                uses: actions/setup-python@v4
+                with:
+                    python-version: '3.12'
+
+            -   name: Install dependencies
+                run: |
+                    python -m pip install --upgrade hatch
+
+            -   name: Generate SLUG
+                id: generate_slug
+                run: |
+                  SLUG=$(echo "$BRANCH_NAME" | iconv -t ascii//TRANSLIT | sed -r s/[^a-zA-Z0-9]+/-/g | sed -r s/^-+\|-+$//g | tr A-Z a-z)
+                  echo "SLUG=$SLUG" >> $GITHUB_OUTPUT
+
+            # Bump for dev versions
+            -   name: Bump version
+                if: github.ref == 'refs/heads/main'
+                run: hatch run dev-bump $GITHUB_RUN_NUMBER && git push && echo "Bumped to version $(hatch version)"
+                continue-on-error: true
+
+            -   name: Local bump
+                if: github.ref != 'refs/heads/main'
+                run: hatch run local-bump $(hatch version)+${{ steps.generate_slug.outputs.SLUG }}
+                continue-on-error: true
+
+            -   name: Build package
+                run: hatch build
+
+            -   uses: actions/upload-artifact@v3
+                with:
+                    name: "dist-${{ steps.generate_slug.outputs.SLUG }}"
+                    path: dist/*
+                    if-no-files-found: error
+                    retention-days: 7

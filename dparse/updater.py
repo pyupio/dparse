@@ -98,6 +98,7 @@ class PipfileUpdater:
                 "Updating a Pipfile requires the pipenv extra to be installed."
                 " Install it with pip install dparse[pipenv]")
         pipfile = tempfile.NamedTemporaryFile(delete=False)
+        pipfile.close()
         p = Project(chdir=False)
         p.write_toml(data=data, path=pipfile.name)
         data = open(pipfile.name).read()

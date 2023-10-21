@@ -1,0 +1,26 @@
+name: PyPi Release
+
+on:
+    workflow_run:
+      workflows: [CI]
+      branches: [production]
+      types:
+        - completed
+
+jobs:
+    pypi-publish:        
+        name: upload release to PyPI
+        runs-on: ubuntu-latest
+        if: ${{ github.event.workflow_run.conclusion == 'success' }}        
+        environment: release
+        permissions:
+            id-token: write
+        steps:
+            - uses: actions/download-artifact@v3
+              with:
+                name: dist-main
+                path: dist
+            - name: Publish package distributions to PyPI
+              uses: pypa/gh-action-pypi-publish@release/v1
+              with:
+                print-hash: true

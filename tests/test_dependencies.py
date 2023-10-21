@@ -140,6 +140,11 @@ def test_parser_class():
     dep_file = parse("", path="tox.ini")
     assert isinstance(dep_file.parser, parser.ToxINIParser)
 
+    with pytest.raises(errors.UnknownDependencyFileError) as e:
+        parse("")
+
+@pytest.mark.conda
+def test_conda_parser_class():
     dep_file = parse("", file_type=filetypes.conda_yml)
     assert isinstance(dep_file.parser, parser.CondaYMLParser)
 
@@ -147,7 +152,4 @@ def test_parser_class():
     assert isinstance(dep_file.parser, parser.CondaYMLParser)
 
     dep_file = parse("", parser=parser.CondaYMLParser)
-    assert isinstance(dep_file.parser, parser.CondaYMLParser)
-
-    with pytest.raises(errors.UnknownDependencyFileError) as e:
-        parse("")
+    assert isinstance(dep_file.parser, parser.CondaYMLParser)    
