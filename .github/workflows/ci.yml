@@ -6,6 +6,7 @@ on:
         - 'main'
     pull_request:
       types: [opened, synchronize, reopened]
+    workflow_dispatch:
 
 env:
     BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
@@ -61,19 +62,28 @@ jobs:
             -   name: Generate SLUG
                 id: generate_slug
                 run: |
-                  SLUG=$(echo "$BRANCH_NAME" | iconv -t ascii//TRANSLIT | sed -r s/[^a-zA-Z0-9]+/-/g | sed -r s/^-+\|-+$//g | tr A-Z a-z)
+                  if [ "$GITHUB_EVENT_NAME" == "workflow_run" ]; then
+                    SLUG="release"
+                  else
+                    SLUG=$(echo "$BRANCH_NAME" | iconv -t ascii//TRANSLIT | sed -r s/[^a-zA-Z0-9]+/-/g | sed -r s/^-+\|-+$//g | tr A-Z a-z)
+                  fi
                   echo "SLUG=$SLUG" >> $GITHUB_OUTPUT
 
-            # Bump for dev versions
-            -   name: Bump version
-                if: github.ref == 'refs/heads/main'
-                run: hatch run dev-bump $GITHUB_RUN_NUMBER && git push && echo "Bumped to version $(hatch version)"
-                continue-on-error: true
-
+                # Bump for PRs with local a PEP440 version
             -   name: Local bump
-                if: github.ref != 'refs/heads/main'
+                if: github.event_name == 'pull_request' && github.ref != 'refs/heads/main'
                 run: hatch run local-bump $(hatch version)+${{ steps.generate_slug.outputs.SLUG }}
                 continue-on-error: true
+
+                # Bump for PRs with a dev a PEP440 version
+            -   name: Dev bump
+                if: github.event_name == 'push' && github.ref == 'refs/heads/main' && !startsWith(github.event.head_commit.message, 'bump:')
+                run: hatch run dev-bump $GITHUB_RUN_NUMBER && git push --follow-tags && echo "Bumped to dev version $(hatch version)"
+                continue-on-error: true
+
+            -   name: Release bump
+                if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main'
+                run: hatch run beta-bump && git push --follow-tags && echo "Bumped versions $(hatch version)"
 
             -   name: Build package
                 run: hatch build
