@@ -15,9 +15,10 @@ cov = [
   "test-cov",
   "cov-report",
 ]
-bump = "cz bump --check-consistency --changelog"
-dev-bump = "cz bump --devrelease {args} --changelog"
-local-bump = "cz bump {args} --check-consistency --changelog --files-only"
+bump = "cz bump --check-consistency --changelog --yes"
+beta-bump = "cz bump -pr beta --check-consistency --changelog --yes"
+dev-bump = "cz bump --devrelease {args} --check-consistency --yes"
+local-bump = "cz bump {args} --changelog --files-only --yes"
 
 
 [envs.test]
