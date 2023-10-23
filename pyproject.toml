@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "dparse"
-version = "0.6.4.dev34"
+version = "0.6.4.dev38"
 description = "A parser for Python dependency files"
 keywords = ["dparse"]
 readme = "README.rst"
