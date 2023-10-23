@@ -62,7 +62,7 @@ jobs:
             -   name: Generate SLUG
                 id: generate_slug
                 run: |
-                  if [ "$GITHUB_EVENT_NAME" == "workflow_run" ]; then
+                  if [ "$GITHUB_EVENT_NAME" == "workflow_dispatch" ]; then
                     SLUG="release"
                   else
                     SLUG=$(echo "$BRANCH_NAME" | iconv -t ascii//TRANSLIT | sed -r s/[^a-zA-Z0-9]+/-/g | sed -r s/^-+\|-+$//g | tr A-Z a-z)
