@@ -1,22 +1,9 @@
-## 0.6.4.dev29 (2023-10-23)
+## 0.6.4b0 (2023-10-23)
 
 ### Perf
 
 - **pyproject.toml**: Set the start version of the new dparse release
-
-## 0.6.3.dev26 (2023-10-22)
-
-### Perf
-
 - **.github**: prepare release workflows
-
-## 0.6.3.dev26 (2023-10-22)
-
-### Perf
-
-- **.github**: prepare release workflows
-
-## 0.6.3.dev21 (2023-10-21)
 
 ## 0.6.3 (2023-06-26)
 
