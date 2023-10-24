@@ -10,28 +10,18 @@ jobs:
       permissions:
           id-token: write
       steps:
-          - uses: actions/download-artifact@v3
+          - name: Download artifact
+            id: download-artifact
+            uses: dawidd6/action-download-artifact@v2
             with:
+              workflow: ci.yml
+              workflow_conclusion: success
+              branch: main
+              event: workflow_dispatch
               name: dist-release
               path: dist
+              if_no_artifact_found: fail
           - name: Publish package distributions to PyPI
             uses: pypa/gh-action-pypi-publish@release/v1
             with:
               print-hash: true
-
-    repo-release:
-      needs: pypi-publish
-      name: GitHub release
-      runs-on: ubuntu-latest
-      steps:
-        - name: TAG version
-          id: tag
-          run: |
-            TAG_VERSION=$(hatch version)
-            echo "TAG_VERSION=$TAG_VERSION" >> $GITHUB_OUTPUT
-
-        - name: Release
-          uses: softprops/action-gh-release@v1
-          with:
-            body_path: "CHANGELOG.md"
-            tag_name: ${{ steps.tag.outputs.TAG_VERSION }}
