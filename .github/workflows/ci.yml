@@ -18,10 +18,14 @@ jobs:
         strategy:
           fail-fast: false
           matrix:
-            python-version: [ "3.7", "3.8", "3.9", "3.10", "3.11", "3.12"]
+            python-version: [ "3.8", "3.9", "3.10", "3.11", "3.12", "3.13"]
             os: [ubuntu-latest, windows-latest, macos-latest]
         steps:
             - uses: actions/checkout@v4
+
+            - run: |
+                git config user.name github-actions
+                git config user.email github-actions@github.com
 
             - name: Set up Python ${{ matrix.python-version }}
               uses: actions/setup-python@v4
@@ -42,13 +46,6 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             -   uses: actions/checkout@v4
-                with:
-                    fetch-depth: 0
-                    token: ${{ secrets.PAT }}
-
-            -   run: |
-                    git config user.name github-actions
-                    git config user.email github-actions@github.com
 
             -   name: Set up Python
                 uses: actions/setup-python@v4
