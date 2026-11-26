@@ -494,12 +494,32 @@ class PyprojectTomlParser(Parser):
         if not cfg or "project" not in cfg:
             return
 
+        project = cfg["project"]
+        if not isinstance(project, dict):
+            raise MalformedDependencyFileError(
+                info=f"'project' must be a table, not "
+                f"{type(project).__name__}"
+            )
+
+        optional_dependencies = project.get("optional-dependencies", {})
+        if not isinstance(optional_dependencies, dict):
+            raise MalformedDependencyFileError(
+                info="'project.optional-dependencies' must be a table, not "
+                f"{type(optional_dependencies).__name__}"
+            )
+
         sections = {
-            "dependencies": cfg["project"].get("dependencies", []),
-            **cfg["project"].get("optional-dependencies", {}),
+            "dependencies": project.get("dependencies", []),
+            **optional_dependencies,
         }
 
         for section, lines in sections.items():
+            if not isinstance(lines, list) or not all(
+                isinstance(line, str) for line in lines
+            ):
+                raise MalformedDependencyFileError(
+                    info=f"'{section}' must be a list of strings"
+                )
             for line in lines:
                 req = RequirementsTXTLineParser.parse(line)
                 if req:
