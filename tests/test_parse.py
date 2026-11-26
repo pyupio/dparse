@@ -584,3 +584,68 @@ def test_pyproject_toml_no_extra() -> None:
     assert dep_file.dependencies[0].specs == SpecifierSet("")
     assert dep_file.dependencies[0].dependency_type == "pyproject.toml"
     assert dep_file.dependencies[0].section == "dependencies"
+
+
+def test_pyproject_toml_invalid_dependencies_type() -> None:
+    """A scalar `dependencies` value must not be iterated character by
+    character, which silently turned "requests" into 8 bogus packages.
+    """
+    content = """
+    [project]
+    name = "my_package"
+    dependencies = "requests"
+    """
+    throw = None
+
+    try:
+        parse(content, file_type=filetypes.pyproject_toml)
+    except Exception as e:
+        throw = e
+
+    assert isinstance(throw, MalformedDependencyFileError)
+
+
+def test_pyproject_toml_invalid_dependencies_entry_type() -> None:
+    content = """
+    [project]
+    name = "my_package"
+    dependencies = [1, 2]
+    """
+    throw = None
+
+    try:
+        parse(content, file_type=filetypes.pyproject_toml)
+    except Exception as e:
+        throw = e
+
+    assert isinstance(throw, MalformedDependencyFileError)
+
+
+def test_pyproject_toml_project_is_not_a_table() -> None:
+    content = """
+    project = []
+    """
+    throw = None
+
+    try:
+        parse(content, file_type=filetypes.pyproject_toml)
+    except Exception as e:
+        throw = e
+
+    assert isinstance(throw, MalformedDependencyFileError)
+
+
+def test_pyproject_toml_optional_dependencies_is_not_a_table() -> None:
+    content = """
+    [project]
+    name = "my_package"
+    optional-dependencies = ["ReportLab>=1.2"]
+    """
+    throw = None
+
+    try:
+        parse(content, file_type=filetypes.pyproject_toml)
+    except Exception as e:
+        throw = e
+
+    assert isinstance(throw, MalformedDependencyFileError)
